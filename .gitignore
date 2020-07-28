@@ -1,2 +1,5 @@
 Literatur/
 Marcs_Thesis/
+.DS_Store
+.idea/
+__pycache__/
