@@ -3,3 +3,5 @@ Marcs_Thesis/
 .DS_Store
 .idea/
 __pycache__/
+Animation_example.py
+interactive_element_example.py
