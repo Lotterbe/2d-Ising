@@ -58,6 +58,30 @@ class Metropolis:
     def start_simulation(self):
         for step in range(0, self.itersteps):
             self.__update_step(step)
+            
+            
+            
+    def magnetisation(self):
+        m_per_config = np.sum(np.sum(self.all_configs, axis = 2), axis=1) \
+                        / self.total_number_of_points
+        m_average = np.mean(m_per_config)
+        return m_average
+    
+    def total_energy(self):
+        self.energy_per_config = self.inter * np.sum(np.sum((self.all_configs \
+                            * (np.roll(self.all_configs, shift=1, axis=1) \
+                            + np.roll(self.all_configs, shift=1, axis=2))),\
+                            axis=2), axis=1)
+        self.energy_average = np.mean(self.energy_per_config)
+        return self.energy_average
+    
+    def specific_heat(self):
+        # variance of energy
+        # check if division by volume is neaded
+        squared_energy_average = np.mean(self.energy_per_config**2)
+        self.heat_per_lattice = self.beta**2 * (squared_energy_average \
+                                           - self.energy_average**2)
+        return self.heat_per_lattice
 
 
 
