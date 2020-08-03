@@ -16,8 +16,9 @@ class Metropolis:
         # J = inter
         self.inter = interaction
         self.beta = beta
+        # ca. 0.4406
         self.beta_crit = np.log(1+np.sqrt(2))/2
-        self.actual_config = self.__init_config()
+        self.actual_config = self._init_config()
         self.save_number = 0
         self.all_configs = [None] * (int((self.itersteps - self.first_skip)
                                          / self.skip) +
@@ -30,7 +31,7 @@ class Metropolis:
         self.heat_per_lattice = None
 
     #@jit(nopython=True)
-    def __init_config(self):
+    def _init_config(self):
         """Initialize start configuration hot or cold.
 
         """
@@ -116,7 +117,7 @@ class Metropolis:
         squared_magnetisation_average = np.mean(self.m_per_config ** 2)
         self.chi = self.beta * (squared_magnetisation_average
                                 - (self.m_average) ** 2) * self.total_number_of_points
-        return self.chi, self.beta * np.std(self.m_per_config)
+        return self.chi
 
 
     def save_simulation(self, filename):
