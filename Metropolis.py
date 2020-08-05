@@ -1,6 +1,7 @@
 #from numba import jit
 #from numba.experimental import jitclass
 import numpy as np
+from scipy.special import ellipk as elli
 
 #@jitclass
 class Metropolis:
@@ -10,7 +11,7 @@ class Metropolis:
         self.NY = y_lenght
         self.total_number_of_points = self.NX * self.NY
         # check if (itersteps - first_skip) % skip == 0
-        self.itersteps = 1000 * self.total_number_of_points
+        self.itersteps = 1020 * self.total_number_of_points
         self.first_skip = 20*self.total_number_of_points
         self.skip = 10*self.total_number_of_points
         # J = inter
@@ -19,7 +20,6 @@ class Metropolis:
         # ca. 0.4406
         self.beta_crit = np.log(1+np.sqrt(2))/2
         self.actual_config = self._init_config()
-        self.save_number = 0
         self.all_configs = [None] * (int((self.itersteps - self.first_skip)
                                          / self.skip) +
                                      (self.itersteps - self.first_skip) % self.skip)
@@ -29,6 +29,10 @@ class Metropolis:
         self.chi = None
         self.m_average = None
         self.heat_per_lattice = None
+        self.onsager_energy = None
+        self.energy_per_lattice_point = None
+        self.control_value = None 
+        self.onsage_magnetisation = None
 
     #@jit(nopython=True)
     def _init_config(self):
@@ -41,6 +45,7 @@ class Metropolis:
         # hot one
         else:
             init = np.random.choice([-1, 1], (self.NX, self.NY))
+        self.save_number = 0
         return init
 
     #@jit
@@ -129,5 +134,34 @@ class Metropolis:
                  magnetisation=self.m_average, energy=self.energy_average,
                  specific_heat=self.heat_per_lattice, chi=self.chi)
 
+    def OnsagerEnergy(self):
+        # Some variables for simpler calculating
+        k = 1 / ((np.sinh(2 * self.beta * self.inter)) ** 2)  
+        l = 4 * k * (1 + k) ** -2
+        integral = elli(l)
+        self.onsager_energy = (-(self.beta * self.inter) / (np.tanh(2 * (self.beta * self.inter)))) * (1 + 2 / np.pi * (2 * np.tanh(2 * (self.beta * self.inter)) ** 2 - 1) * integral)
+        return self.onsager_energy
+    
+    def EnergyPerLatticePoint(self):
+        if self.energy_average != None:
+            self.energy_per_lattice_point = self.energy_average / self.total_number_of_points 
+        else:
+            self.energy_per_lattice_point = self.total_energy() / self.total_number_of_points 
+        return self.energy_per_lattice_point
 
+    def ControlEnergy(self):
+        # Control via Onsager for every lattice point
+        if self.onsager_energy == self.energy_per_lattice_point:
+            self.control_value = 1
+        else:
+            self.control_value = -1
+        delta_energy = np.abs(self.onsager_energy - self.energy_per_lattice_point)
+        return self.control_value, delta_energy
+    
+    def OnsagerMagn(self):
+        if self.beta > self.beta_crit:
+            self.onsager_magnetisation = (1 - (np.sinh(np.log(1 + np.sqrt(2) * self.beta / self.beta_crit)))**(-4))**(1 / 8)
+        else:
+            self.onsager_magnetisation = 0
+        return self.onsager_magnetisation
 
