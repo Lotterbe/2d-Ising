@@ -1,7 +1,23 @@
-from Metropolis import Metropolis
+from Metropolis import Metropolis, Observables
 import numpy as np
 from Plot import Ising_Plot
+from numba import jitclass
 
+beta = 0.48
+nx, ny = 100, 100
+lattice = (nx, ny)
+metro = Metropolis(*lattice, beta=beta)
+configs = metro.start_simulation()
+observables = Observables(configs, beta=beta)
+observables.measure_observables()
+print('energy_average', observables.energy_average / (nx*ny))
+print(observables.energy_var / (nx*ny))
+print(observables.heat_per_lattice)
+print(observables.m_average)
+print(observables.magnetisation_var)
+print(observables.chi)
+
+quit()
 #metro = Metropolis(100, 100, 3000000, beta=0.7)
 
 
