@@ -17,27 +17,36 @@ for b in beta_arr:
     heat = np.zeros(measure_number)
     magneti = np.zeros(measure_number)
     chi = np.zeros(measure_number)
+    counter = 0
     for m in range(0, measure_number):
         metro.start_simulation()
         #metro.measure_observables()
+        print('############################### \n Measurement ' + str(counter + 1))
         energy[m] = metro.total_energy()
         heat[m] = metro.specific_heat()
         magneti[m] = metro.magnetisation()
         chi[m] = metro.magnetic_susceptibility()
-        print(metro.OnsagerEnergy())
-        print(metro.EnergyPerLatticePoint())
-        print(metro.ControlEnergy())
+        print('Onsager energy: '+ str(metro.OnsagerEnergy()))
+        print('Energy per lattice point: ' + str(metro.EnergyPerLatticePoint()))
+        print('Delta Energy: ' + str(metro.DeltaEnergy()))
+        print('Beta: ' + str(metro.beta))
+        print('Beta_critical: ' + str(metro.beta_crit))
+        print('Onsager magnetisation: '+ str(metro.OnsagerMagn()))
+        print('Averaged Magnetisation: ' + str(metro.magnetisation()))
+        print('Delta Magnetisation: ' + str(metro.DeltaMagnetisation()))
         filename = 'Analyse/Temperatur/' + str(nx) + 'x' + str(ny) + 'lattice_beta_' \
                    + str(b).replace('.', '') + 'measure_no_' + str(m)
         metro.save_simulation(filename)
         metro._init_config()
+        counter += 1
     # nun soll ein komplett neues Objekt erzeugt werden
     # (neues beta oder neue Gittergroesse und damit auch
     # andere Variablen etc)
-    print(np.mean(energy))
-    print(np.mean(heat))
-    print(np.mean(magneti))
-    print(np.mean(chi))
+    print('############################### \n Mean of the observables after '+ str(measure_number) + ' measurements')
+    print('Mean energy: ' + str(np.mean(energy)))
+    print('Mean specific heat: ' + str(np.mean(heat)))
+    print('Mean magnetisation: ' + str(np.mean(magneti)))
+    print('Mean magnetic susceptibility: ' + str(np.mean(chi)))
     del metro
 #configs = metro.all_configs
 #plot_mod = Ising_Plot(configs)
