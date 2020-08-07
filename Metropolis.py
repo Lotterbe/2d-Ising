@@ -140,6 +140,14 @@ class Metropolis:
         integral = elli(l)
         self.onsager_energy = (-(self.beta * self.inter) / (np.tanh(2 * self.beta * self.inter))) * (1 + 2 / np.pi * (2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1) * integral)
         return self.onsager_energy
+
+    def OnsagerEnergy2(self):
+        # Some variables for simpler calculating
+        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1 
+        l = (2 * np.sinh(2 * self.beta * self.inter)) / (np.cosh(2 * self.beta * self.inter) ** 2 )
+        integral = elli(l)
+        self.onsager_energy = (-(self.beta * self.inter) / (np.tanh(2 * self.beta * self.inter))) * (1 + 2 / np.pi * k * integral)
+        return self.onsager_energy
     
     def EnergyPerLatticePoint(self):
         if self.energy_average != None:

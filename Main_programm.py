@@ -6,7 +6,7 @@ from Plot import Ising_Plot
 
 
 #beta_arr = [0.39, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.49]
-beta_arr = [0.39]
+beta_arr = [0.39, 0.49]
 measure_number = 2
 
 for b in beta_arr:
@@ -26,7 +26,8 @@ for b in beta_arr:
         heat[m] = metro.specific_heat()
         magneti[m] = metro.magnetisation()
         chi[m] = metro.magnetic_susceptibility()
-        print('Onsager energy: '+ str(metro.OnsagerEnergy()))
+        print('Onsager energy Cark: '+ str(metro.OnsagerEnergy()))
+        print('Onsager energy Book: '+ str(metro.OnsagerEnergy2()))
         print('Energy per lattice point: ' + str(metro.EnergyPerLatticePoint()))
         print('Delta Energy: ' + str(metro.DeltaEnergy()))
         print('Beta: ' + str(metro.beta))
