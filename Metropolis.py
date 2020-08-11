@@ -1,5 +1,6 @@
 from numba import jitclass, int64, float64
 import numpy as np
+from scipy.special import ellipk as elli
 
 spec = [('NX', int64), ('NY', int64), ('total_number_of_points', int64),
         ('itersteps', int64), ('first_skip', int64), ('skip', int64),
@@ -179,3 +180,43 @@ class Observables:
         obs_var = (number_of_configs - del_number) / number_of_configs * \
                   np.sum((obs_part - obs_part_mean) ** 2)
         return np.sqrt(obs_var)
+
+    def OnsagerEnergy(self):
+        # Some variables for simpler calculating
+        k = 1 / ((np.sinh(2 * self.beta * self.inter)) ** 2)  
+        l = 4 * k * (1 + k) ** -2
+        integral = elli(l)
+        self.onsager_energy = (-(self.beta * self.inter) / (np.tanh(2 * self.beta * self.inter))) * (1 + 2 / np.pi * (2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1) * integral)
+        return self.onsager_energy
+
+    def OnsagerEnergy2(self):
+        # Some variables for simpler calculating
+        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1 
+        l = (2 * np.sinh(2 * self.beta * self.inter)) / (np.cosh(2 * self.beta * self.inter) ** 2 )
+        integral = elli(l)
+        self.onsager_energy = (-(self.beta * self.inter) / (np.tanh(2 * self.beta * self.inter))) * (1 + 2 / np.pi * k * integral)
+        return self.onsager_energy
+    
+    def EnergyPerLatticePoint(self):
+        if self.energy_average != None:
+            self.energy_per_lattice_point = self.energy_average / self.total_number_of_points 
+        else:
+            self.energy_per_lattice_point = self.total_energy() / self.total_number_of_points 
+        return self.energy_per_lattice_point
+
+    def DeltaEnergy(self):
+        delta_energy = np.abs(self.onsager_energy - self.energy_per_lattice_point)
+        return delta_energy
+    
+    def OnsagerMagn(self):
+        # Is only for T < T_c not equal to zero => beta > beta_c 
+        if self.beta > self.beta_crit:
+            self.onsager_magnetisation = (1 - (np.sinh(np.log(1 + np.sqrt(2) * self.beta / self.beta_crit)))**(-4))**(1 / 8)
+        else:
+            self.onsager_magnetisation = 0
+        return self.onsager_magnetisation
+    
+    def DeltaMagnetisation(self):
+        delta_magnetisation = np.abs(self.onsager_magnetisation - self.m_average)
+        return delta_magnetisation
+
