@@ -3,10 +3,11 @@ import numpy as np
 from Plot import Ising_Plot
 from numba import jitclass
 
+
 beta = 0.48
-nx, ny = 100, 100
+nx, ny = 200, 200
 lattice = (nx, ny)
-metro = Metropolis(*lattice, beta=beta)
+metro = Metropolis(*lattice, beta=beta, external_field=0)
 configs = metro.start_simulation()
 observables = Observables(configs, beta=beta)
 observables.measure_observables()
