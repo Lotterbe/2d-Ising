@@ -91,6 +91,7 @@ class Observables:
         self.all_configs = configs
         self.total_number_of_points = len(self.all_configs[0]) * len(self.all_configs[0][0])
         self.beta = beta
+        self.beta_crit = np.log(1 + np.sqrt(2)) / 2
         self.inter = inter
         self.b_ext = external_field
         self.save_lenght = len(configs)
@@ -142,16 +143,18 @@ class Observables:
             self.energy_per_config, del_number=10) / self.total_number_of_points
         self.chi_var = np.sqrt(self.beta) * self.jackknife_for_var(
             self.m_per_config, del_number=10) * self.total_number_of_points
-        print('m', self.m_average, ' +/- ', self.magnetisation_var)
+        #print('m', self.m_average, ' +/- ', self.magnetisation_var)
 
     def save_simulation(self, filename):
         array_list = ['#' + str(len(self.all_configs)) + ' configs',
                       '#' + str(self.total_number_of_points) + ' lattice points',
                       '#' + ' beta = ' + str(self.beta),
-                      '#' + ' interaction = ' + str(self.inter)]
+                      '#' + ' interaction = ' + str(self.inter),
+                      '#' + ' external magnetic field = ' + str(self.b_ext)]
         np.savez_compressed(filename, infos=array_list, configs=self.all_configs,
                             magnetisation=self.m_average, magnetisation_var=self.magnetisation_var,
-                            energy=self.energy_average, energy_var=self.energy_var,
+                            energy=self.energy_average/self.total_number_of_points,
+                            energy_var=self.energy_var/self.total_number_of_points,
                             specific_heat=self.heat_per_lattice, heat_var=self.heat_var,
                             chi=self.chi, chi_var=self.chi_var)
 
@@ -198,10 +201,9 @@ class Observables:
         return self.onsager_energy
     
     def EnergyPerLatticePoint(self):
-        if self.energy_average != None:
-            self.energy_per_lattice_point = self.energy_average / self.total_number_of_points 
-        else:
-            self.energy_per_lattice_point = self.total_energy() / self.total_number_of_points 
+        if self.energy_average == 0:
+            self.total_energy()
+        self.energy_per_lattice_point = self.energy_average / self.total_number_of_points
         return self.energy_per_lattice_point
 
     def DeltaEnergy(self):
