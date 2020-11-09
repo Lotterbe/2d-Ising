@@ -157,12 +157,14 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-lattice_measuring(beta, lattice[-4:], [0.5, 1])
+lattice_measuring(beta_list=beta[1:3], lattice_list=lattice[3:4], external_field_list = [0])
+#Observables.OnsagerMagn()
+
 
 # Here you can call the plot function, with lists (!) for beta,
 # lattice sizes and external magnetic field values
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-lattice_plotting(direc='Analyse/', beta_list=beta, lattice_list=lattice[-4:],
-                 external_field_list=[0.5, 1], observables=observables)
+#lattice_plotting(direc='Analyse/', beta_list=beta, lattice_list=lattice[-4:],
+#                 external_field_list=[0.5, 1], observables=observables)
