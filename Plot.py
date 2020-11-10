@@ -77,7 +77,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     :param b_field: value of magnetic field
     """
     plt.rcParams['figure.figsize'] = 16, 9
-    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='*', label=legend)
+    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='x', label=legend)
     # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
@@ -91,7 +91,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.legend(loc='best', framealpha=0.5, fontsize=24)
-    plotname = 'Analyse/Volumen/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
     plt.close()
@@ -108,9 +108,15 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field):
     :param legend: list of different legends for each plot
     :param b_field: value of magnetic field
     """
+    colors = ['blue', 'red', 'orange', 'seagreen', 'purple', 'gold', 'deeppink', 'darkslateblue', 'green']
+    forms = ['o', '^', 'X', '*', 'd', '>', 'D', 'v', '<']
+    counter = 0
     for y, yerr, leg in zip(y_data, y_err, legend):
-        plt.errorbar(x=beta, y=y, yerr=yerr, fmt='*', label=leg)
-        # plt.xlim([beta[0], beta[-1]])
+        plt.rcParams['figure.figsize'] =16, 9
+        plt.errorbar(x=beta, y=y, yerr=yerr, color=colors[counter], fmt=forms[counter], label=leg)
+        #plt.xlim([beta[3], beta[9]])
+        #plt.xlim(0.425, 0.455)
+        #plt.ylim(-1,200)
         plt.xlabel(r'$\beta$', fontsize=24)
         if name == 'energy':
             plt.ylabel(r'E', fontsize=24)
@@ -122,10 +128,11 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field):
             plt.ylabel(r'$\chi$', fontsize=24)
         plt.xticks(fontsize=20)
         plt.yticks(fontsize=20)
+        counter += 1
         print(leg)
-    #plt.legend(loc='best', framealpha=0.5, fontsize=24)
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=24)
-    plotname = 'Analyse/Volumen/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
+    plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
+    plt.tight_layout()
+    plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
     plt.close()
 
@@ -165,8 +172,9 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                 #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
                 #           + 'B_ext = ' + str(b_field)
                 #legend = conf_number + '\n' + leg_part
-                leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
-                           + r'$B_{ext}$ = ' + str(b_field)
+                #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
+                #           + r'$B_{ext}$ = ' + str(b_field)
+                leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' 
                 legend = conf_number + '\n' + leg_part
                 obs_legend.append(leg_part)
                 make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
@@ -184,7 +192,7 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-lattice_measuring(beta_list=beta, lattice_list=lattice, external_field_list = [0])
+#lattice_measuring(beta_list=beta, lattice_list=lattice, external_field_list = [0])
 #Observables.OnsagerMagn()
 
 
@@ -193,8 +201,8 @@ lattice_measuring(beta_list=beta, lattice_list=lattice, external_field_list = [0
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-#lattice_plotting(direc='Analyse/Volumen/', beta_list=beta, lattice_list=lattice,
-#                 external_field_list=[0], observables=observables)
+lattice_plotting(direc='Analyse/Volumen/Deutsch/', beta_list=beta, lattice_list=lattice,
+                 external_field_list=[0], observables=observables)
 """
 b_field = 0
 for b in beta:
