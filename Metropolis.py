@@ -145,6 +145,11 @@ class Observables:
         self.magnetisation_var = 0
         self.heat_var = 0
         self.chi_var = 0
+        self.onsager_magnetisation = 0
+        self.delta_magnetisation = 0
+        self.delta_energy = 0
+        self.energy_per_lattice_point = 0
+        self.onsager_energy = 0
 
     def magnetisation(self):
         """Calculates the magnetisation of lattice
@@ -206,6 +211,11 @@ class Observables:
         self.chi_var = np.sqrt(self.beta) * self.jackknife_for_var(
             self.m_per_config, del_number=10
         ) * self.total_number_of_points
+        self.OnsagerEnergy()
+        self.EnergyPerLatticePoint()
+        self.DeltaEnergy()
+        self.OnsagerMagn()
+        self.DeltaMagnetisation()
 
     def save_simulation(self, filename):
         """Saves the configs and measured observables in a compressed file.
@@ -227,7 +237,9 @@ class Observables:
             energy=self.energy_average / self.total_number_of_points,
             energy_var=self.energy_var / self.total_number_of_points,
             specific_heat=self.heat_per_lattice, heat_var=self.heat_var,
-            chi=self.chi, chi_var=self.chi_var
+            chi=self.chi, chi_var=self.chi_var,
+            Onsager_Energy = self.onsager_energy,
+            Onsager_Magnetisation = self.onsager_magnetisation
         )
 
     def jackknife(self, observable_per_config, del_number=1):
@@ -276,40 +288,22 @@ class Observables:
 
     def OnsagerEnergy(self):
         # Some variables for simpler calculating
-        k = 1 / ((np.sinh(2 * self.beta * self.inter)) ** 2)
-        l = 4 * k * (1 + k) ** -2
-        integral = elli(l)
-        self.onsager_energy = - self.beta * self.inter / np.tanh(
-            2 * self.beta * self.inter
-        ) * (1 + 2 / np.pi * (2 * np.tanh(
-            2 * self.beta * self.inter
-        ) ** 2 - 1) * integral)
-        return self.onsager_energy
-
-    def OnsagerEnergy2(self):
-        # Some variables for simpler calculating
-        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1
+        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1 
         l = (2 * np.sinh(2 * self.beta * self.inter)) \
-            / (np.cosh(2 * self.beta * self.inter) ** 2)
+             / (np.cosh(2 * self.beta * self.inter) ** 2 )
         integral = elli(l)
-        self.onsager_energy = (-(self.beta * self.inter)
+        self.onsager_energy = (-(self.beta * self.inter) 
                                / (np.tanh(2 * self.beta * self.inter))) *\
                               (1 + 2 / np.pi * k * integral)
-        return self.onsager_energy
-
+    
     def EnergyPerLatticePoint(self):
-        if self.energy_average == 0:
-            self.total_energy()
-        self.energy_per_lattice_point = self.energy_average / \
+        self.energy_per_lattice_point = self.energy_average /\
                                         self.total_number_of_points
-        return self.energy_per_lattice_point
-
+        
     def DeltaEnergy(self):
-        delta_energy = np.abs(
+        self.delta_energy = np.abs(
             self.onsager_energy - self.energy_per_lattice_point
         )
-        return delta_energy
-
     def OnsagerMagn(self):
         # Is only for T < T_c not equal to zero => beta > beta_c 
         if self.beta > self.beta_crit:
@@ -318,10 +312,8 @@ class Observables:
             ) ** (-4)) ** (1 / 8)
         else:
             self.onsager_magnetisation = 0
-        return self.onsager_magnetisation
-
+    
     def DeltaMagnetisation(self):
-        delta_magnetisation = np.abs(
-            self.onsager_magnetisation - self.m_average
+        self.delta_magnetisation = np.abs(
+          self.onsager_magnetisation - self.m_average
         )
-        return delta_magnetisation

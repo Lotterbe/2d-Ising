@@ -4,82 +4,32 @@ from Plot import Ising_Plot
 from numba import jitclass
 
 
-beta = 0.48
-nx, ny = 200, 200
-lattice = (nx, ny)
-metro = Metropolis(*lattice, beta=beta, external_field=0)
-configs = metro.start_simulation()
-observables = Observables(configs, beta=beta)
-observables.measure_observables()
-print('energy_average', observables.energy_average / (nx*ny))
-print(observables.energy_var / (nx*ny))
-print(observables.heat_per_lattice)
-print(observables.m_average)
-print(observables.magnetisation_var)
-print(observables.chi)
-
-quit()
-#metro = Metropolis(100, 100, 3000000, beta=0.7)
-
-
-#beta_arr = [0.39, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.49]
-beta_arr = [0.39, 0.49]
-measure_number = 2
-
-for b in beta_arr:
-    nx = 10
-    ny = 10
-    metro = Metropolis(nx, ny, beta=b)
-    energy = np.zeros(measure_number)
-    energy_var = np.zeros(measure_number)
-    heat = np.zeros(measure_number)
-    magneti = np.zeros(measure_number)
-    magneti_var = np.zeros(measure_number)
-    chi = np.zeros(measure_number)
-    counter = 0
-    for m in range(0, measure_number):
-        metro.start_simulation()
-        #metro.measure_observables()
-        print('############################### \n Measurement ' + str(counter + 1))
-        energy[m] = metro.total_energy()
-        heat[m] = metro.specific_heat()
-        magneti[m] = metro.magnetisation()
-        chi[m] = metro.magnetic_susceptibility()
-        print('Onsager energy Cark: '+ str(metro.OnsagerEnergy()))
-        print('Onsager energy Book: '+ str(metro.OnsagerEnergy2()))
-        print('Energy per lattice point: ' + str(metro.EnergyPerLatticePoint()))
-        print('Delta Energy: ' + str(metro.DeltaEnergy()))
-        print('Beta: ' + str(metro.beta))
-        print('Beta_critical: ' + str(metro.beta_crit))
-        print('Onsager magnetisation: '+ str(metro.OnsagerMagn()))
-        print('Averaged Magnetisation: ' + str(metro.magnetisation()))
-        print('Delta Magnetisation: ' + str(metro.DeltaMagnetisation()))
+beta_arr = [0.39, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.49]
+# 2^n Gittergrößen bis 512x512
+#nx, ny = 200, 200
+lattice_arr = [(2,2), (8,8)]
+for lattice in lattice_arr:
+    print(lattice)
+    quit()
+    b_field = 0
+    for beta in beta_arr:
+        print(r'########################## Starte Simulation mit $\beta = $', str(beta))
+        metro = Metropolis(*lattice, beta=beta, external_field=b_field)
+        configs = metro.start_simulation()
+        observables = Observables(configs, beta=beta)
+        observables.measure_observables()
         filename = 'Analyse/Temperatur/' + str(nx) + 'x' + str(ny) + 'lattice_beta_' \
-                   + str(b).replace('.', '') + 'measure_no_' + str(m)
-        metro.save_simulation(filename)
-        metro._init_config()
-        counter += 1
-    # nun soll ein komplett neues Objekt erzeugt werden
-    # (neues beta oder neue Gittergroesse und damit auch
-    # andere Variablen etc)
-    print('############################### \n Mean of the observables after '+ str(measure_number) + ' measurements')
-    print('Mean energy: ' + str(np.mean(energy)))
-    print('Mean specific heat: ' + str(np.mean(heat)))
-    print('Mean magnetisation: ' + str(np.mean(magneti)))
-    print('Mean magnetic susceptibility: ' + str(np.mean(chi)))
-    del metro
-#configs = metro.all_configs
-#plot_mod = Ising_Plot(configs)
+                           + str(b).replace('.', '') + 'external_field' + str(b_field)
+        observables.save_simulation(filename)
+        del metro
     
 """
-b = 0.39
-nx = 100
-ny = 100
-metro = Metropolis(nx, ny, beta = b)
-metro.start_simulation()
-print(metro.OnsagerEnergy())
-print(metro.EnergyPerLatticePoint())
-print(metro.Control())
+Notizen:
     
+Hysterese als Alternative zur Überprüfung der einzelnen Observablen in Abh. 
+ von b_field 
+
+beta_crit = ca. 0.4406
+
 """
 
