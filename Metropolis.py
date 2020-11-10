@@ -156,11 +156,16 @@ class Observables:
         self.DeltaMagnetisation()
 
     def save_simulation(self, filename):
-        array_list = ['#' + str(len(self.all_configs)) + ' configs',
-                      '#' + str(self.total_number_of_points) + ' lattice points',
-                      '#' + ' beta = ' + str(self.beta),
-                      '#' + ' interaction = ' + str(self.inter),
-                      '#' + ' external magnetic field = ' + str(self.b_ext)]
+        #array_list = ['#' + str(len(self.all_configs)) + ' configs',
+        #              '#' + str(self.total_number_of_points) + ' lattice points',
+        #              '#' + ' beta = ' + str(self.beta),
+        #              '#' + ' interaction = ' + str(self.inter),
+        #              '#' + ' external magnetic field = ' + str(self.b_ext)]
+        array_list = ['#' + str(len(self.all_configs)) + ' Konfigurationen',
+                      '#' + str(self.total_number_of_points) + ' Gitterpunkte',
+                      '#' + ' beta =' + str(self.beta),
+                      '#' + ' Wechselwirkung = ' + str(self.inter),
+                      '#' + ' externes Magnetfeld = ' + str(self.b_ext)]
         np.savez_compressed(filename, infos=array_list, configs=self.all_configs,
                             magnetisation=self.m_average, magnetisation_var=self.magnetisation_var,
                             energy=self.energy_average/self.total_number_of_points,
