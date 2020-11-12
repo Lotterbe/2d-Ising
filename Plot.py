@@ -82,7 +82,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'E', fontsize=24)
+        plt.ylabel(r'U', fontsize=24)
     if name == 'magnetisation':
         plt.ylabel(r'M', fontsize=24)
     if name == 'specific_heat':
@@ -91,7 +91,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
         plt.ylabel(r'$\chi$', fontsize=24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.legend(loc='best', framealpha=0.5, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
@@ -119,7 +119,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
             plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             plt.xlabel(r'$\beta$', fontsize=24)
             if name == 'energy':
-                plt.ylabel(r'E', fontsize=24)
+                plt.ylabel(r'U', fontsize=24)
             if name == 'magnetisation':
                 plt.ylabel(r'M', fontsize=24)
             if name == 'specific_heat':
@@ -134,7 +134,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
             plt.yticks(fontsize=20)
             counter += 1
             print(leg)
-        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
+        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
         plt.tight_layout()
         plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
         plt.savefig(plotname)
@@ -146,7 +146,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
             plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             plt.xlabel(r'$\beta$', fontsize=24)
             if name == 'energy':
-                plt.ylabel(r'E', fontsize=24)
+                plt.ylabel(r'U', fontsize=24)
             if name == 'magnetisation':
                 plt.ylabel(r'M', fontsize=24)
             if name == 'specific_heat':
@@ -161,9 +161,9 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
             plt.yticks(fontsize=20)
             counter += 1
             print(leg)
-        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
+        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
         plt.tight_layout()
-        plotname = 'Analyse/Volumen/Deutsch/Plots/Special/' + '2xbegrenzt_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
+        plotname = 'Analyse/Volumen/Deutsch/Plots/Special/' + 'NurGross_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
         plt.savefig(plotname)
         plt.close()
 
