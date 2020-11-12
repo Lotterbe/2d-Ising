@@ -78,7 +78,8 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     """
     plt.rcParams['figure.figsize'] = 16, 9
     plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='x', label=legend)
-    # plt.xlim([beta[0], beta[-1]])
+    plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
         plt.ylabel(r'E', fontsize=24)
@@ -97,7 +98,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     plt.close()
 
 
-def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field):
+def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
     """Plots more than one data set of the observable. Give the function a list
     of data_lists.
 
@@ -108,36 +109,66 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field):
     :param legend: list of different legends for each plot
     :param b_field: value of magnetic field
     """
-    colors = ['blue', 'red', 'orange', 'seagreen', 'purple', 'gold', 'deeppink', 'darkslateblue', 'green']
-    forms = ['o', '^', 'X', '*', 'd', '>', 'D', 'v', '<']
+    colors = ['blue', 'red', 'orange', 'green', 'purple', 'dodgerblue', 'deeppink', 'darkslateblue', 'crimson']
+    forms = ['s', 'o', '^', 'X', 's', 'd', '>', 'D', 'v', '<']
     counter = 0
-    for y, yerr, leg in zip(y_data, y_err, legend):
-        plt.rcParams['figure.figsize'] =16, 9
-        plt.errorbar(x=beta, y=y, yerr=yerr, color=colors[counter], fmt=forms[counter], label=leg)
-        #plt.xlim([beta[3], beta[9]])
-        #plt.xlim(0.425, 0.455)
-        #plt.ylim(-1,200)
-        plt.xlabel(r'$\beta$', fontsize=24)
-        if name == 'energy':
-            plt.ylabel(r'E', fontsize=24)
-        if name == 'magnetisation':
-            plt.ylabel(r'M', fontsize=24)
-        if name == 'specific_heat':
-            plt.ylabel(r'$c_p$', fontsize=24)
-        if name == 'chi':
-            plt.ylabel(r'$\chi$', fontsize=24)
-        plt.xticks(fontsize=20)
-        plt.yticks(fontsize=20)
-        counter += 1
-        print(leg)
-    plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
-    plt.tight_layout()
-    plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
-    plt.savefig(plotname)
-    plt.close()
+    if OnlyBig == False:
+        for y, yerr, leg in zip(y_data, y_err, legend):
+            plt.rcParams['figure.figsize'] =16, 9
+            plt.errorbar(x=beta, y=y, yerr=yerr, color=colors[counter], fmt=forms[counter], label=leg)
+            plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            plt.xlabel(r'$\beta$', fontsize=24)
+            if name == 'energy':
+                plt.ylabel(r'E', fontsize=24)
+            if name == 'magnetisation':
+                plt.ylabel(r'M', fontsize=24)
+            if name == 'specific_heat':
+                plt.ylabel(r'$c_p$', fontsize=24)
+                #plt.xlim(0.409, 0.4709)
+                #plt.ylim(-2, 10)
+            if name == 'chi':
+                plt.ylabel(r'$\chi$', fontsize=24)
+                #plt.xlim(0.409, 0.4709)
+                #plt.ylim(-2, 200)
+            plt.xticks(fontsize=20)
+            plt.yticks(fontsize=20)
+            counter += 1
+            print(leg)
+        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
+        plt.tight_layout()
+        plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
+        plt.savefig(plotname)
+        plt.close()
+    if OnlyBig == True:
+        for y, yerr, leg in zip(y_data, y_err, legend):
+            plt.rcParams['figure.figsize'] =16, 9
+            plt.errorbar(x=beta, y=y, yerr=yerr, color=colors[counter], fmt=forms[counter], label=leg)
+            plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            plt.xlabel(r'$\beta$', fontsize=24)
+            if name == 'energy':
+                plt.ylabel(r'E', fontsize=24)
+            if name == 'magnetisation':
+                plt.ylabel(r'M', fontsize=24)
+            if name == 'specific_heat':
+                plt.ylabel(r'$c_p$', fontsize=24)
+                plt.xlim(0.409, 0.4709)
+                #plt.ylim(-0.1, 10)
+            if name == 'chi':
+                plt.ylabel(r'$\chi$', fontsize=24)
+                plt.xlim(0.409, 0.4709)
+                #plt.ylim(-2, 200)
+            plt.xticks(fontsize=20)
+            plt.yticks(fontsize=20)
+            counter += 1
+            print(leg)
+        plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'$B_{ext} = $' + str(b_field), title_fontsize = 24, fontsize=24)
+        plt.tight_layout()
+        plotname = 'Analyse/Volumen/Deutsch/Plots/Special/' + '2xbegrenzt_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
+        plt.savefig(plotname)
+        plt.close()
 
 
-def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observables):
+def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observables, OnlyBig):
     """This function goes through the different lattice and
     external magnetic field values and calls different plot functions for you.
     There is a special (consistent) naming for the save files.
@@ -146,7 +177,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
     :param beta_list: all values for beta
     :param lattice_list: all lattice sizes
     :param external_field_list: all external magnetic field values
-    :param observables: all observables which should be plotted
+    :param observables: all :observables which should be plotted
     """
     beta = beta_list
     lattice = lattice_list
@@ -157,34 +188,61 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
             obs_arr = []
             obs_var_arr = []
             obs_legend = []
-            for lat in lattice:
-                obs = []
-                obs_var = []
-                print(r'Lattice size' + str(lat))
-                for b in beta:
-                    print(r'$\beta$ = ' + str(b))
-                    filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
-                               + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
-                    data = np.load(filename)
-                    obs.append(data[obs_name])
-                    obs_var.append(data[obs_var_name])
-                    conf_number = str(data['infos'][0]).replace('#', '')
-                #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
-                #           + 'B_ext = ' + str(b_field)
-                #legend = conf_number + '\n' + leg_part
-                #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
-                #           + r'$B_{ext}$ = ' + str(b_field)
-                leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' 
-                legend = conf_number + '\n' + leg_part
-                obs_legend.append(leg_part)
-                make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
-                obs_arr.append(obs)
-                obs_var_arr.append(obs_var)
-            make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field)
+            if OnlyBig == False:
+                for lat in lattice:
+                    obs = []
+                    obs_var = []
+                    print(r'Lattice size' + str(lat))
+                    for b in beta:
+                        print(r'$\beta$ = ' + str(b))
+                        filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                                   + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                        data = np.load(filename)
+                        obs.append(data[obs_name])
+                        obs_var.append(data[obs_var_name])
+                        conf_number = str(data['infos'][0]).replace('#', '')
+                    #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
+                    #           + 'B_ext = ' + str(b_field)
+                    #legend = conf_number + '\n' + leg_part
+                    #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
+                    #           + r'$B_{ext}$ = ' + str(b_field)
+                    leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' 
+                    legend = conf_number + '\n' + leg_part
+                    obs_legend.append(leg_part)
+                    make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
+                    obs_arr.append(obs)
+                    obs_var_arr.append(obs_var)
+                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
+            if OnlyBig == True:
+                for lat in lattice[5:9]:
+                    obs = []
+                    obs_var = []
+                    print(r'Lattice size' + str(lat))
+                    for b in beta:
+                        print(r'$\beta$ = ' + str(b))
+                        filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                                   + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                        data = np.load(filename)
+                        obs.append(data[obs_name])
+                        obs_var.append(data[obs_var_name])
+                        conf_number = str(data['infos'][0]).replace('#', '')
+                    #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
+                    #           + 'B_ext = ' + str(b_field)
+                    #legend = conf_number + '\n' + leg_part
+                    #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
+                    #           + r'$B_{ext}$ = ' + str(b_field)
+                    leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' 
+                    legend = conf_number + '\n' + leg_part
+                    obs_legend.append(leg_part)
+                    obs_arr.append(obs)
+                    obs_var_arr.append(obs_var)
+                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
 
 
 '''Do not change the following three lists'''
-beta = [0.39, 0.40, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.48, 0.49]
+#beta = [0.39, 0.40, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.48, 0.49]
+#beta = [0.415, 0.425, 0.4325, 0.4375, 0.4425, 0.4475, 0.455, 0.465]
+beta_all = [0.39, 0.40, 0.41, 0.415, 0.42, 0.425, 0.43, 0.4325, 0.435, 0.4375, 0.44, 0.4425, 0.445, 0.4475, 0.45, 0.455, 0.46, 0.465, 0.47, 0.48, 0.49]
 lattice = [(2 ** i, 2 ** i) for i in range(1, 10)]
 observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
                ('specific_heat', 'heat_var'), ('chi', 'chi_var')]
@@ -201,8 +259,8 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-lattice_plotting(direc='Analyse/Volumen/Deutsch/', beta_list=beta, lattice_list=lattice,
-                 external_field_list=[0], observables=observables)
+lattice_plotting(direc='Analyse/Volumen/Deutsch/', beta_list=beta_all, lattice_list=lattice,
+                 external_field_list=[0], observables=observables, OnlyBig = False)
 """
 b_field = 0
 for b in beta:
