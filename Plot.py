@@ -59,7 +59,7 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
                 configs = metro.start_simulation()
                 observables = Observables(configs, beta=b)
                 observables.measure_observables()
-                filename = 'Analyse/Volumen/Deutsch/' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                filename = 'Analyse/256x256/MitBFeld/' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                            + str(b).replace('.', '') + 'external_field_' + str(b_field)
                 observables.save_simulation(filename)
                 del metro, observables
@@ -77,7 +77,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     :param b_field: value of magnetic field
     """
     plt.rcParams['figure.figsize'] = 16, 9
-    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='x', label=legend)
+    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='o', label=legend)
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
@@ -92,7 +92,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/Volumen/Deutsch/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/OhneBFeld/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
     plt.close()
@@ -212,7 +212,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
-                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
+                #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
             if OnlyBig == True:
                 for lat in lattice[5:9]:
                     obs = []
@@ -240,17 +240,17 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
 
 
 '''Do not change the following three lists'''
-#beta = [0.39, 0.40, 0.41, 0.42, 0.43, 0.435, 0.44, 0.445, 0.45, 0.46, 0.47, 0.48, 0.49]
-#beta = [0.415, 0.425, 0.4325, 0.4375, 0.4425, 0.4475, 0.455, 0.465]
-beta_all = [0.39, 0.40, 0.41, 0.415, 0.42, 0.425, 0.43, 0.4325, 0.435, 0.4375, 0.44, 0.4425, 0.445, 0.4475, 0.45, 0.455, 0.46, 0.465, 0.47, 0.48, 0.49]
-lattice = [(2 ** i, 2 ** i) for i in range(1, 10)]
+#beta_all_for_all_lattices = [0.39, 0.40, 0.41, 0.415, 0.42, 0.425, 0.43, 0.4325, 0.435, 0.4375, 0.44, 0.4425, 0.445, 0.4475, 0.45, 0.455, 0.46, 0.465, 0.47, 0.48, 0.49]
+beta_all_setted = [0.39, 0.395, 0.4, 0.405, 0.41, 0.4125, 0.415, 0.4175, 0.42, 0.4225, 0.425, 0.4275, 0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.44, 0.44125,  0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45, 0.4525, 0.455, 0.4575, 0.46, 0.4625, 0.465, 0.4675, 0.47, 0.475, 0.48, 0.485, 0.49]
+#lattice = [(2 ** i, 2 ** i) for i in range(1, 10)]
+setted_lattice = [(256, 256)]
 observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
                ('specific_heat', 'heat_var'), ('chi', 'chi_var')]
 
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-#lattice_measuring(beta_list=beta, lattice_list=lattice, external_field_list = [0])
+lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [1])
 #Observables.OnsagerMagn()
 
 
@@ -259,8 +259,8 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-lattice_plotting(direc='Analyse/Volumen/Deutsch/', beta_list=beta_all, lattice_list=lattice,
-                 external_field_list=[0], observables=observables, OnlyBig = False)
+#lattice_plotting(direc='Analyse/256x256/OhneBFeld/', beta_list=beta_all_setted, lattice_list=setted_lattice,
+#                 external_field_list=[0], observables=observables, OnlyBig = False)
 """
 b_field = 0
 for b in beta:
