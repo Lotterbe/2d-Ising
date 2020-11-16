@@ -51,6 +51,7 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
     lattice = lattice_list
     external_b_field = external_field_list
     for b_field in external_b_field:
+        print('Measuring external magnetic field B = ' + str(b_field))
         for lat in lattice:
             print(r'Measuring lattice size ' + str(lat))
             for b in beta:
@@ -250,7 +251,7 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [1])
+lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [-0.75])
 #Observables.OnsagerMagn()
 
 
