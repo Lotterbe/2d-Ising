@@ -83,7 +83,6 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        #plt.axhline()
         plt.ylabel(r'U', fontsize=24)
     if name == 'magnetisation':
         plt.ylabel(r'M', fontsize=24)
@@ -95,10 +94,47 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '256x256 Gitter', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/OhneBFeld/Plots/Special/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/OhneBFeld/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
     plt.close()
+    
+def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_energy, ons_mag):
+    """
+
+    :param beta: all values for beta
+    :param y_data: observable values
+    :param y_err: the error for the observable values
+    :param name: of the observable (e.g. energy)
+    :param legend: for the plot
+    :param lat: lattice size
+    :param b_field: value of magnetic field
+    """
+    plt.rcParams['figure.figsize'] = 16, 9
+    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='o', label=legend)
+    plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            # plt.xlim([beta[0], beta[-1]])
+    plt.xlabel(r'$\beta$', fontsize=24)
+    if name == 'energy':
+        plt.ylabel(r'U', fontsize=24)
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label='Onsager Energie')
+    if name == 'magnetisation':
+        plt.ylabel(r'M', fontsize=24)
+        plt.plot(beta, ons_mag, 'r+', markersize=10, label='Onsager Magnetisierung')
+    if name == 'specific_heat':
+        plt.ylabel(r'$c_p$', fontsize=24)
+    if name == 'chi':
+        plt.ylabel(r'$\chi$', fontsize=24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '256x256 Gitter', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/OhneBFeld/Plots/Special/' + 'OnsEner' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+               + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
+    plt.savefig(plotname)
+    plt.close()
+
+    
 
 
 def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
@@ -197,6 +233,8 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                 for lat in lattice:
                     obs = []
                     obs_var = []
+                    #ons_energy = []
+                    #ons_mag = []
                     print(r'Lattice size' + str(lat))
                     for b in beta:
                         print(r'$\beta$ = ' + str(b))
@@ -205,6 +243,8 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                         data = np.load(filename)
                         obs.append(data[obs_name])
                         obs_var.append(data[obs_var_name])
+                        #ons_energy.append(data['Onsager_Energy'])
+                        #ons_mag.append(data['Onsager_Magnetisation'])
                         conf_number = str(data['infos'][0]).replace('#', '')
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
                     #           + 'B_ext = ' + str(b_field)
@@ -215,6 +255,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     legend = conf_number + '\n' + leg_part
                     obs_legend.append(leg_part)
                     make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
+                    #make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, ons_mag)             
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
                 #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
@@ -410,12 +451,11 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-#lattice_plotting(direc='Analyse/Volumen/Deutsch/Plots/Special/', beta_list=beta_all_setted, lattice_list=setted_lattice,
-#                 external_field_list=b_field_all, observables=observables, OnlyBig = False)
+#lattice_plotting(direc='Analyse/256x256/OhneBFeld/', beta_list=beta_all_setted, lattice_list=setted_lattice,
+#                 external_field_list=[0], observables=observables, OnlyBig = False)
 #bfield_plotting(direc='Analyse/256x256/OhneBFeld/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables, OnlyBig = False)
-hysterese_plotting(direc='Analyse/256x256/Hysterese/', beta_list=beta_min, lattice_list=setted_lattice,
-                 external_field_list=b_field_all, observables=observables)
-
+#hysterese_plotting(direc='Analyse/256x256/Hysterese/', beta_list=beta_min, lattice_list=setted_lattice,
+#                 external_field_list=b_field_all, observables=observables)
 
    
