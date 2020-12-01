@@ -24,9 +24,9 @@ class Metropolis:
         self.NY = y_lenght
         self.total_number_of_points = self.NX * self.NY
         # check if (itersteps - first_skip) % skip == 0
-        self.itersteps = 1020 * self.total_number_of_points
-        self.first_skip = 20 * self.total_number_of_points
-        self.skip = 10 * self.total_number_of_points
+        self.itersteps = 2220 * self.total_number_of_points
+        self.first_skip = 220 * self.total_number_of_points
+        self.skip = 20 * self.total_number_of_points
         # J = inter
         self.inter = 1
         self.beta = beta
@@ -145,10 +145,7 @@ class Observables:
         self.magnetisation_var = 0
         self.heat_var = 0
         self.chi_var = 0
-        self.onsager_magnetisation = 0
-        self.delta_magnetisation = 0
-        self.delta_energy = 0
-        self.energy_per_lattice_point = 0
+        self.yang_magnetisation = 0
         self.onsager_energy = 0
 
     def magnetisation(self):
@@ -212,10 +209,7 @@ class Observables:
             self.m_per_config, del_number=10
         ) * self.total_number_of_points
         self.OnsagerEnergy()
-        self.EnergyPerLatticePoint()
-        self.DeltaEnergy()
-        self.OnsagerMagn()
-        self.DeltaMagnetisation()
+        self.YangMagn()
 
     def save_simulation(self, filename):
         #array_list = ['#' + str(len(self.all_configs)) + ' configs',
@@ -235,7 +229,7 @@ class Observables:
                             specific_heat=self.heat_per_lattice, heat_var=self.heat_var,
                             chi=self.chi, chi_var=self.chi_var, 
                             Onsager_Energy = self.onsager_energy, 
-                            Onsager_Magnetisation = self.onsager_magnetisation)
+                            Yang_Magnetisation = self.yang_magnetisation)
 
     def jackknife(self, observable_per_config, del_number=1):
         """Calculates the error with jackknife for primary observables.
@@ -291,24 +285,11 @@ class Observables:
                                / (np.tanh(2 * self.beta * self.inter))) *\
                               (1 + 2 / np.pi * k * integral)
     
-    def EnergyPerLatticePoint(self):
-        self.energy_per_lattice_point = self.energy_average /\
-                                        self.total_number_of_points
-        
-    def DeltaEnergy(self):
-        self.delta_energy = np.abs(
-            self.onsager_energy - self.energy_per_lattice_point
-        )
-    def OnsagerMagn(self):
+    def YangMagn(self):
         # Is only for T < T_c not equal to zero => beta > beta_c 
         if self.beta > self.beta_crit:
-            self.onsager_magnetisation = (1 - np.sinh(
+            self.yang_magnetisation = (1 - np.sinh(
                 np.log(1 + np.sqrt(2) * self.beta / self.beta_crit)
             ) ** (-4)) ** (1 / 8)
         else:
-            self.onsager_magnetisation = 0
-    
-    def DeltaMagnetisation(self):
-        self.delta_magnetisation = np.abs(
-          self.onsager_magnetisation - self.m_average
-        )
+            self.yang_magnetisation = 0

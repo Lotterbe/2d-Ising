@@ -60,9 +60,12 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
                 configs = metro.start_simulation()
                 observables = Observables(configs, beta=b)
                 observables.measure_observables()
-                filename = 'Analyse/256x256/MitBFeld/' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                filename = 'Analyse/256x256/TestKonfigs/' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                            + str(b).replace('.', '') + 'external_field_' + str(b_field)
                 observables.save_simulation(filename)
+                #metro.b_field += 1
+                #all configs = 0!!!
+                #metro.start_simulation()
                 del metro, observables
 
 
@@ -99,7 +102,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
     plt.savefig(plotname)
     plt.close()
     
-def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_energy, ons_mag):
+def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_energy, yang_mag):
     """
 
     :param beta: all values for beta
@@ -120,7 +123,7 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
         plt.plot(beta, ons_energy, 'r+', markersize=10, label='Onsager Energie')
     if name == 'magnetisation':
         plt.ylabel(r'M', fontsize=24)
-        plt.plot(beta, ons_mag, 'r+', markersize=10, label='Onsager Magnetisierung')
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label='Yang Magnetisierung')
     if name == 'specific_heat':
         plt.ylabel(r'$c_p$', fontsize=24)
     if name == 'chi':
@@ -233,8 +236,8 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                 for lat in lattice:
                     obs = []
                     obs_var = []
-                    #ons_energy = []
-                    #ons_mag = []
+                    ons_energy = []
+                    yang_mag = []
                     print(r'Lattice size' + str(lat))
                     for b in beta:
                         print(r'$\beta$ = ' + str(b))
@@ -243,19 +246,20 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                         data = np.load(filename)
                         obs.append(data[obs_name])
                         obs_var.append(data[obs_var_name])
-                        #ons_energy.append(data['Onsager_Energy'])
-                        #ons_mag.append(data['Onsager_Magnetisation'])
+                        ons_energy.append(data['Onsager_Energy'])
+                        yang_mag.append(data['Onsager_Magnetisation'])
                         conf_number = str(data['infos'][0]).replace('#', '')
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
                     #           + 'B_ext = ' + str(b_field)
                     #legend = conf_number + '\n' + leg_part
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
                     #           + r'$B_{ext}$ = ' + str(b_field)
-                    leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' H' 
+                    #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' H = 0' 
+                    leg_part = 'H = 0' 
                     legend = conf_number + '\n' + leg_part
                     obs_legend.append(leg_part)
-                    make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
-                    #make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, ons_mag)             
+                    #make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
+                    make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag)             
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
                 #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
@@ -416,7 +420,7 @@ def hysterese_plotting(direc, beta_list, lattice_list, external_field_list, obse
                     obs.append(data[obs_name])
                     obs_var.append(data[obs_var_name])
                     conf_number = str(data['infos'][0]).replace('#', '')
-                leg_part = r'H = ' + str(b_field) 
+                leg_part = r'$\beta$ = ' + str(b) 
                 legend = conf_number + '\n' + leg_part
                 obs_legend.append(leg_part)
                 hysterese_plot(b, obs, obs_var, obs_name, legend, lat, external_b_field)
@@ -441,7 +445,7 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-#lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [0.75, -0.125, 0.125, -0.375, 0.375, -0.625, 0.625, -0.875, 0.875])
+lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [0])
 #hysterese_measuring(beta_list=beta_min, lattice_list=setted_lattice, external_field_list = b_field_all)
 #Observables.OnsagerMagn()
 
