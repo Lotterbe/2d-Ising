@@ -1,4 +1,4 @@
-from numba import jitclass, int64, float64
+from numba import jitclass, int64, float64, boolean
 import numpy as np
 from scipy.special import ellipk as elli
 
@@ -7,26 +7,31 @@ spec = [('NX', int64), ('NY', int64), ('total_number_of_points', int64),
         ('inter', float64), ('beta', float64), ('beta_crit', float64),
         ('actual_config', int64[:, :]), ('save_number', int64),
         ('save_lenght', int64), ('all_configs', int64[:, :, :]),
-        ('b_ext', float64)]
-
+        ('b_ext', float64), ('flip', boolean)]
 
 @jitclass(spec)
 class Metropolis:
-    def __init__(self, x_lenght, y_lenght, beta=0.20, external_field=0):
+    def __init__(self, x_lenght, y_lenght, beta=0.20, external_field=0, flip=True):
         """ Constructor - defines the attributes
 
         :param x_lenght: x-lenght of lattice
         :param y_lenght: y-lenght of lattice
         :param beta: the inverse temperature
         :param external_field: external magnetic field
+        :param flip: Boolean for flip on or off
         """
         self.NX = x_lenght
         self.NY = y_lenght
         self.total_number_of_points = self.NX * self.NY
         # check if (itersteps - first_skip) % skip == 0
-        self.itersteps = 1020 * self.total_number_of_points
-        self.first_skip = 20 * self.total_number_of_points
-        self.skip = 10 * self.total_number_of_points
+        if 0.430 < beta < 0.450:
+            self.itersteps = 2220 * self.total_number_of_points
+            self.first_skip = 120 * self.total_number_of_points
+            self.skip = 20 * self.total_number_of_points
+        else:
+            self.itersteps = 1020 * self.total_number_of_points
+            self.first_skip = 20 * self.total_number_of_points
+            self.skip = 10 * self.total_number_of_points
         # J = inter
         self.inter = 1
         self.beta = beta
@@ -40,6 +45,7 @@ class Metropolis:
         self.all_configs = np.zeros((self.save_lenght, self.NX, self.NY),
                                     dtype=np.int64)
         self.b_ext = external_field
+        self.flip = flip
 
     def _init_config(self):
         """Initialize start configuration hot or cold.
@@ -77,6 +83,14 @@ class Metropolis:
         self.all_configs[self.save_number] = np.copy(self.actual_config)
         self.save_number += 1
 
+    def reset(self):
+        self.save_lenght = int((self.itersteps - self.first_skip)
+                               / self.skip) + \
+                           (self.itersteps - self.first_skip) % self.skip
+        self.all_configs = np.zeros((self.save_lenght, self.NX, self.NY),
+                                    dtype=np.int64)
+        self.save_number = 0
+
     def __update_step(self, step):
         """The main update routine:
         - Chooses random spin and flips it
@@ -101,7 +115,8 @@ class Metropolis:
         if step >= self.first_skip and step % self.skip == 0:
             self.save()
             # Flip Flop
-            self.actual_config *= (-1)
+            if self.flip == True:
+                self.actual_config *= (-1)
 
     def start_simulation(self):
         """This method starts the whole simulation and updates
@@ -139,6 +154,9 @@ class Observables:
         self.m_per_config = np.zeros(self.save_lenght,
                                      dtype=np.float64)
         self.m_average = 0
+        self.nabs_m_per_config = np.zeros(self.save_lenght,
+                                     dtype=np.float64)
+        self.nabs_m_average = 0
         self.chi = 0
         self.heat_per_lattice = 0
         self.energy_var = 0
@@ -159,6 +177,13 @@ class Observables:
                                           axis=1)) \
                             / self.total_number_of_points
         self.m_average = np.mean(self.m_per_config)
+
+    def nabs_magnetisation(self):
+        self.nabs_m_per_config = np.sum(np.sum(self.all_configs, axis=2),
+                                          axis=1) \
+                            / self.total_number_of_points
+        self.nabs_m_average = np.mean(self.nabs_m_per_config)
+
 
     def total_energy(self):
         """Calculates the energy of the lattice
@@ -233,8 +258,8 @@ class Observables:
                             energy=self.energy_average/self.total_number_of_points,
                             energy_var=self.energy_var/self.total_number_of_points,
                             specific_heat=self.heat_per_lattice, heat_var=self.heat_var,
-                            chi=self.chi, chi_var=self.chi_var, 
-                            Onsager_Energy = self.onsager_energy, 
+                            chi=self.chi, chi_var=self.chi_var,
+                            Onsager_Energy = self.onsager_energy,
                             Onsager_Magnetisation = self.onsager_magnetisation)
 
     def jackknife(self, observable_per_config, del_number=1):
@@ -250,7 +275,7 @@ class Observables:
         number_of_configs = len(observable)
         obs_part = [np.mean(np.roll(observable, shift=-part * del_number,
                                     axis=0)[:- del_number])
-                    for part in range(number_of_configs)]
+                    for part in range(int(number_of_configs/del_number))]
         obs_part_mean = np.mean(obs_part)
         obs_var = (number_of_configs - del_number) / number_of_configs * \
                   np.sum((np.array(obs_part) - obs_part_mean) ** 2)
@@ -270,11 +295,11 @@ class Observables:
         obs_base_part_squared = np.array([np.mean(
             np.roll(base_observable, shift=-part * del_number,
                     axis=0)[:- del_number]
-        ) ** 2 for part in range(number_of_configs)])
+        ) ** 2 for part in range(int(number_of_configs/del_number))])
         obs_base_square_part = np.array([np.mean(
             np.roll(base_observable ** 2, shift=-part * del_number,
                     axis=0)[:- del_number]
-        ) for part in range(number_of_configs)])
+        ) for part in range(int(number_of_configs/del_number))])
         obs_part = obs_base_square_part - obs_base_part_squared
         obs_part_mean = np.mean(obs_part)
         obs_var = (number_of_configs - del_number) / number_of_configs * \
@@ -283,31 +308,31 @@ class Observables:
 
     def OnsagerEnergy(self):
         # Some variables for simpler calculating
-        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1 
+        k = 2 * np.tanh(2 * self.beta * self.inter) ** 2 - 1
         l = (2 * np.sinh(2 * self.beta * self.inter)) \
              / (np.cosh(2 * self.beta * self.inter) ** 2 )
         integral = elli(l)
-        self.onsager_energy = (-(self.beta * self.inter) 
+        self.onsager_energy = (-(self.beta * self.inter)
                                / (np.tanh(2 * self.beta * self.inter))) *\
                               (1 + 2 / np.pi * k * integral)
-    
+
     def EnergyPerLatticePoint(self):
         self.energy_per_lattice_point = self.energy_average /\
                                         self.total_number_of_points
-        
+
     def DeltaEnergy(self):
         self.delta_energy = np.abs(
             self.onsager_energy - self.energy_per_lattice_point
         )
     def OnsagerMagn(self):
-        # Is only for T < T_c not equal to zero => beta > beta_c 
+        # Is only for T < T_c not equal to zero => beta > beta_c
         if self.beta > self.beta_crit:
             self.onsager_magnetisation = (1 - np.sinh(
                 np.log(1 + np.sqrt(2) * self.beta / self.beta_crit)
             ) ** (-4)) ** (1 / 8)
         else:
             self.onsager_magnetisation = 0
-    
+
     def DeltaMagnetisation(self):
         self.delta_magnetisation = np.abs(
           self.onsager_magnetisation - self.m_average
