@@ -24,14 +24,19 @@ class Metropolis:
         self.NY = y_lenght
         self.total_number_of_points = self.NX * self.NY
         # check if (itersteps - first_skip) % skip == 0
+        self.itersteps = 4500 * self.total_number_of_points
+        self.first_skip = 500 * self.total_number_of_points
+        self.skip = 20 * self.total_number_of_points
+        '''
         if 0.430 < beta < 0.450:
             self.itersteps = 2220 * self.total_number_of_points
-            self.first_skip = 120 * self.total_number_of_points
+            self.first_skip = 220 * self.total_number_of_points
             self.skip = 20 * self.total_number_of_points
         else:
             self.itersteps = 1020 * self.total_number_of_points
             self.first_skip = 20 * self.total_number_of_points
             self.skip = 10 * self.total_number_of_points
+        '''
         # J = inter
         self.inter = 1
         self.beta = beta
