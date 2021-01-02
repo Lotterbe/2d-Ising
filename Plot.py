@@ -60,7 +60,7 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
                 configs = metro.start_simulation()
                 observables = Observables(configs, beta=b)
                 observables.measure_observables()
-                filename = 'Analyse/256x256/Observablen/Neu_201229/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                filename = 'Analyse/256x256/FinalTestVariance/Run3/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                            + str(b).replace('.', '') + 'external_field_' + str(b_field)
                 observables.save_simulation(filename)
                 del metro, observables
@@ -131,7 +131,7 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     plt.legend(loc='best', framealpha=0.5, title = '256x256, H = 0', title_fontsize = 24, fontsize=24)
     plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()            
                     
 def make_nice_plot_Ons_double(beta, y_data1, y_err1, y_data2, y_err2, name, legend1, legend2, lat, b_field, ons_energy, yang_mag):
@@ -166,9 +166,9 @@ def make_nice_plot_Ons_double(beta, y_data1, y_err1, y_data2, y_err2, name, lege
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/Test500FirstSkips/' + 'SkipTestFine_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/FinalTestSkips/' + 'SkipTest_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()
     
 def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_err3, name, legend1, legend2, legend3, lat, b_field, ons_energy, yang_mag):
@@ -183,9 +183,9 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
     :param b_field: value of magnetic field
     """
     plt.rcParams['figure.figsize'] = 16, 9
-    plt.errorbar(x=beta, y=y_data1, yerr=y_err1, fmt='o', color='deeppink', label=legend1)
-    plt.errorbar(x=beta, y=y_data2, yerr=y_err2, fmt='o', label=legend2)
-    plt.errorbar(x=beta, y=y_data3, yerr=y_err3, fmt='o', color='orange', label=legend3)
+    plt.errorbar(x=beta, y=y_data1, yerr=y_err1, fmt='o', label=legend1)
+    plt.errorbar(x=beta, y=y_data2, yerr=y_err2, fmt='o', color='purple', label=legend2)
+    plt.errorbar(x=beta, y=y_data3, yerr=y_err3, fmt='o', color='hotpink', label=legend3)
    # plt.fill_between([0.43, 0.45], -5, 300,  color='papayawhip')
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             # plt.xlim([beta[0], beta[-1]])
@@ -209,9 +209,9 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '256x256 Gitter, \n H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/TestAusreißer/' + 'Ausreißer_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/FinalTestVariance/' + 'Ausreißer_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()    
 
     
@@ -258,7 +258,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
         plt.tight_layout()
         #plotname = 'Analyse/256x256/Beides/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
         plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/' + str(name) + '_plot_all_in_one_lattice_256x256.pdf'
-        plt.savefig(plotname)
+        plt.savefig(plotname, bbox_inches='tight')
         plt.close()
     if OnlyBig == True:
         for y, yerr, leg in zip(y_data, y_err, legend):
@@ -285,7 +285,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
         plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
         plt.tight_layout()
         plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/Special/' + 'NurGross_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
-        plt.savefig(plotname)
+        plt.savefig(plotname, bbox_inches='tight')
         plt.close()
 
 
@@ -403,9 +403,9 @@ def lattice_plotting_double(direc1, direc2, beta_list, lattice_list, external_fi
                 print(r'Lattice size' + str(lat))
                 for b in beta:
                     print(r'$\beta$ = ' + str(b))
-                    filename1 = filepart1 + 'WenigSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    filename1 = filepart1  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
-                    filename2 = filepart2 + 'WenigSkips_' + str(256) + 'x' + str(256) + 'lattice_beta_' \
+                    filename2 = filepart2  + str(256) + 'x' + str(256) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
                     data1 = np.load(filename1)
                     data2 = np.load(filename2)
@@ -478,11 +478,11 @@ def lattice_plotting_three(direc1, direc2, direc3, beta_list, lattice_list, exte
                 print(r'Lattice size' + str(lat))
                 for b in beta:
                     print(r'$\beta$ = ' + str(b))
-                    filename1 = filepart1 + 'MehrSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    filename1 = filepart1  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
-                    filename2 = filepart2 + 'MehrSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    filename2 = filepart2  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
-                    filename3 = filepart3 + 'MehrSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    filename3 = filepart3 + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
                     data1 = np.load(filename1)
                     data2 = np.load(filename2)
@@ -595,7 +595,7 @@ def plot_phasediagram():
     plt.yticks(fontsize=20)
     plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
     plotname = 'Analyse/' + 'PhasendiagrammMagnetisierung.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()            
     
     
@@ -619,7 +619,7 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-#lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [0])
+#lattice_measuring(beta_list=beta_test, lattice_list=setted_lattice, external_field_list = [0])
 
 
 # Here you can call the plot function, with lists (!) for beta,
@@ -629,10 +629,12 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 
 #lattice_plotting(direc='Analyse/256x256/Observablen/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                                  external_field_list=[0], observables=observables, OnlyBig = False)
-#lattice_plotting_double(direc1='Analyse/256x256/Test500FirstSkips/Run2_200Konfigs_Fine/', direc2='Analyse/256x256/Test500FirstSkips/Run2_100Konfigs_Fine/', beta_list=beta_all_setted, lattice_list=setted_lattice,
+#lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all_for_all_lattices, lattice_list=lattice,
+#                                  external_field_list=[0], observables=observables, OnlyBig = True)
+#lattice_plotting_double(direc1='Analyse/256x256/FinalTestSkips/100Konfigs/', direc2='Analyse/256x256/FinalTestSkips/200Konfigs/', beta_list=beta_test, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables)
-#lattice_plotting_three(direc1='Analyse/256x256/TestAusreißer/1/', direc2='Analyse/256x256/TestAusreißer/2/', direc3='Analyse/256x256/TestAusreißer/3/', beta_list=beta_test, lattice_list=setted_lattice,
-#                 external_field_list=[0], observables=observables)
+lattice_plotting_three(direc1='Analyse/256x256/FinalTestVariance/Run1/', direc2='Analyse/256x256/FinalTestVariance/Run2/', direc3='Analyse/256x256/FinalTestVariance/Run3/', beta_list=beta_test, lattice_list=setted_lattice,
+                 external_field_list=[0], observables=observables)
 #bfield_plotting(direc='Analyse/256x256/OhneBFeld/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables, OnlyBig = False)
 

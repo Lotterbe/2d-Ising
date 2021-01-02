@@ -48,22 +48,22 @@ def hysterese_measuring(external_field_list, beta=0.49):
 
 def hysterese_plot(direc, beta=0.49, external_b_field_list=[0]):
     """
-
+e size
+    :param b_field: va
     :param beta: all values for beta
     :param y_data: observable values
     :param y_err: the error for the observable values
     :param name: of the observable (e.g. energy)
     :param legend: for the plot
-    :param lat: lattice size
-    :param b_field: value of magnetic field
+    :param lat: latticlue of magnetic field
     """
     filepart = direc
-    #filename = filepart + '256x256' + 'lattice_beta_' \
-    #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
+    filename = filepart + '256x256' + 'lattice_beta_' \
+                        + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
     #filename = filepart + 'Nochmal_' + '256x256' + 'lattice_beta_' \
     #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
-    filename = filepart + '128x128' + 'lattice_beta_' \
-                        + str(beta).replace('.', '') + 'external_field_0.15' + '.npz'
+    #filename = filepart + '128x128' + 'lattice_beta_' \
+    #                    + str(beta).replace('.', '') + 'external_field_0.15' + '.npz'
     data = np.load(filename)
     external_b_field = external_b_field_list
     y_data = data['y']
@@ -72,18 +72,18 @@ def hysterese_plot(direc, beta=0.49, external_b_field_list=[0]):
     legend = r'Datenpunkte' + '\n'+ r'$\beta$ = ' + str(beta)
     plt.plot(external_b_field[0], y_data[0], 'D', color='black', label='Startpunkt', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data, yerr=y_err, fmt='-o', ecolor='red', label=legend, zorder = 1)
-    #plt.axhline(y=0, xmin=-0.2, xmax=2, color='black', linestyle='dashed')
-    #plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black', linestyle='dashed')
+    plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
+    plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black')
     plt.xlabel(r'H', fontsize=24)
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.legend(loc='best', framealpha=0.5, title = '128x128', title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '256x256', title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
-    plotname = 'Analyse/128x128/Hysterese/'  + 'Hysterese_' + '128x128' + '_lattice_' + 'beta' + str(beta) + '.pdf'
+    #plotname = 'Analyse/128x128/Hysterese/'  + 'Hysterese_' + '128x128' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201208_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
-    #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201207_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
-    plt.savefig(plotname)
+    plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201207_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()
     
 def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
@@ -105,7 +105,7 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
     filename1 = filepart1 + '128x128' + 'lattice_beta_' \
                         + str(beta).replace('.', '') + 'external_field_0.15' + '.npz'
-    filename2 = filepart2 + '256x256' + 'lattice_beta_' \
+    filename2 = filepart2 + 'Nochmal_' + '256x256' + 'lattice_beta_' \
                         + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
     data1 = np.load(filename1)
     data2 = np.load(filename2)
@@ -119,6 +119,8 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     legend2 = r'256x256' 
     plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data1, yerr=y_err1, color = 'blue', fmt='-o', ecolor='red', label=legend1, zorder = 1)
+    plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
+    plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black')
     plt.plot(external_b_field[0], y_data2[0], 'D', color='black', label='Startpunkt', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data2, yerr=y_err2, color = 'purple', fmt='-o', ecolor='red', label=legend2, zorder = 1)
     plt.xlabel(r'H', fontsize=24)
@@ -128,7 +130,7 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     plt.legend(loc='best', framealpha=0.5, title = r'$\beta$ = ' + str(beta), title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
     plotname = 'Analyse/256x256/Hysterese/'  + 'VergleichGitterHysterese_' + 'beta' + str(beta) + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()
     
 def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_list=[0]):
@@ -174,7 +176,9 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     plt.plot(external_b_field[0], y_data2[0], 'D', color='black', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data2, yerr=y_err2, color = 'purple', fmt='-o', ecolor='red', label=legend2, zorder = 1)
     plt.plot(external_b_field[0], y_data3[0], 'D', color='black', label='Startpunkt', zorder = 2)
-    plt.errorbar(x=external_b_field, y=y_data3, yerr=y_err3, color = 'dodgerblue', fmt='-o', ecolor='red', label=legend3, zorder = 1)
+    plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
+    plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black')
+    plt.errorbar(x=external_b_field, y=y_data3, yerr=y_err3, color = 'hotpink', fmt='-o', ecolor='red', label=legend3, zorder = 1)
     plt.xlabel(r'H', fontsize=24)
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
@@ -182,7 +186,7 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     plt.legend(loc='best', framealpha=0.5, title = r'128x128', title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
     plotname = 'Analyse/128x128/Hysterese/'  + 'VergleichBetaHysterese' + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()
 
     
@@ -198,8 +202,6 @@ def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     :param b_field: value of magnetic field
     """
     filepart = direc
-    counter = 0
-    print(counter)
     #filename = filepart + '256x256' + 'lattice_beta_' \
     #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
     #filename = filepart + 'Nochmal_' + '256x256' + 'lattice_beta_' \
@@ -212,16 +214,12 @@ def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     y_err = data['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
     legend = r'Datenpunkte' + '\n'+ r'$\beta$ = ' + str(beta)
-    while counter != 5:
-        if counter < 4:
-            plt.plot(external_b_field[counter], y_data[counter], 'D', color='black', zorder = 2)
-        if counter == 4:
-            plt.plot(external_b_field[counter], y_data[counter], 'D', color='black', label='Neukurve', zorder = 2)
-        counter += 1
-        print(counter)
+    plt.errorbar(x=external_b_field[0:4], y=y_data[0:4], yerr=y_err[0:4], fmt='-D', ecolor='red', color='black', zorder = 2, label = 'Neukurve')
+    plt.errorbar(x=external_b_field[56:65], y=y_data[56:65], yerr=y_err[56:65], fmt='-D', ecolor='red', color='hotpink', zorder = 2, label = 'Abfallend')
+    plt.errorbar(x=external_b_field[116:125], y=y_data[116:125], yerr=y_err[116:125], fmt='-D', ecolor='red', color='purple', zorder = 2, label = 'Aufsteigend')
     plt.errorbar(x=external_b_field, y=y_data, yerr=y_err, fmt='-o', ecolor='red', label=legend, zorder = 1)
-    #plt.axhline(y=0, xmin=-0.2, xmax=2, color='black', linestyle='dashed')
-    #plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black', linestyle='dashed')
+    plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
+    plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black')
     plt.xlabel(r'H', fontsize=24)
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
@@ -231,7 +229,7 @@ def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     plotname = 'Analyse/128x128/Hysterese/'  + 'HystereseNeukurve_' + '128x128' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201208_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201207_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
-    plt.savefig(plotname)
+    plt.savefig(plotname, bbox_inches='tight')
     plt.close()
 
 
@@ -288,4 +286,4 @@ beta_list = [0.43, 0.45, 0.49]
 #hysterese_plot('Analyse/256x256/Hysterese/Neu_201204/', beta=0.49, external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_newcurve('Analyse/128x128/Hysterese/', beta=0.43, external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_two('Analyse/128x128/Hysterese/', 'Analyse/256x256/Hysterese/Neu_201204/', external_b_field_list=b_fields_smaller_plot)
-hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+#hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', external_b_field_list=b_fields_smaller_plot)
