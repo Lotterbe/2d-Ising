@@ -60,7 +60,7 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
                 configs = metro.start_simulation()
                 observables = Observables(configs, beta=b)
                 observables.measure_observables()
-                filename = 'Analyse/256x256/Observablen/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                filename = 'Analyse/256x256/Observablen/Neu_201229/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                            + str(b).replace('.', '') + 'external_field_' + str(b_field)
                 observables.save_simulation(filename)
                 del metro, observables
@@ -128,8 +128,8 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
-    plt.legend(loc='best', framealpha=0.5, title = '256x256 Gitter', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/Test500FirstSkips/Run2_200Konfigs_Fine/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plt.legend(loc='best', framealpha=0.5, title = '256x256, H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname)
     plt.close()            
@@ -318,7 +318,9 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     print(r'Lattice size' + str(lat))
                     for b in beta:
                         print(r'$\beta$ = ' + str(b))
-                        filename = filepart + 'WenigSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        #filename = filepart + 'WenigSkips_' + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        #           + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                        filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                                    + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
                         data = np.load(filename)
                         obs.append(data[obs_name])
@@ -334,7 +336,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) #+ ' H = 0' 
                     #leg_part = 'Angepasste Skips, H = 0' 
                     conf_number = str(data['infos'][0]).replace('#', '')
-                    legend = 'Datenpunkte \n H = 0 \n' + conf_number 
+                    legend = 'Datenpunkte \n' + conf_number 
                     obs_legend.append(leg_part)
                     #make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
                     make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag)             
@@ -564,6 +566,41 @@ def bfield_plotting(direc, beta_list, lattice_list, external_field_list, observa
                 obs_var_arr.append(obs_var)
             #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig) 
 
+def plot_phasediagram():
+    beta_list = np.arange(0.39, 0.49, 0.0001)
+    beta_crit = np.log(1 + np.sqrt(2)) / 2
+    yang_magnetisation = np.ones(len(beta_list))
+    counter = 0
+    for beta in beta_list:
+        if beta > beta_crit:
+                yang_magnetisation[counter] = (1 - np.sinh(
+                    np.log(1 + np.sqrt(2) * beta / beta_crit)
+                ) ** (-4)) ** (1 / 8)
+        else:
+                yang_magnetisation[counter] = 0
+        counter += 1
+    plt.rcParams['figure.figsize'] =16, 9
+    plt.axhline(y=0, xmin=-200 , xmax=200, color='black', ls='-')
+    plt.axvline(x=beta_crit, ymin=-200 , ymax=200, color='black', ls='--')
+    plt.plot(beta_list, yang_magnetisation, '-r', label='Yang Magnetisierung')
+    plt.plot(beta_list, -yang_magnetisation, '-r')
+    plt.annotate('Phasenübergang \n 1. Ordnung', xytext=(0.4625, -0.2), xy=(0.46, -0.5), fontsize=20)
+    plt.annotate(r'', xytext=(0.46, 0.5), xy=(0.46, -0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
+    plt.annotate('Phasenübergang \n 2. Ordnung', xytext=(0.42, 0.3), xy=(0.46, -0.5), fontsize=20)
+    plt.annotate(r'', xytext=(0.43, 0.5), xy=(0.45, 0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
+    plt.xlim([min(beta_list), max(beta_list)])
+    plt.xlabel(r'$\beta$', fontsize = 24)
+    plt.ylabel(r'$M_{Yang}$', fontsize = 24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/' + 'PhasendiagrammMagnetisierung.pdf'
+    plt.savefig(plotname)
+    plt.close()            
+    
+    
+    
+
 
 '''Do not change the following three lists'''
 beta_all_for_all_lattices = [0.39, 0.40, 0.41, 0.415, 0.42, 0.425, 0.43, 0.4325, 0.435, 0.4375, 0.44, 0.4425, 0.445, 0.4475, 0.45, 0.455, 0.46, 0.465, 0.47, 0.48, 0.49]
@@ -582,7 +619,7 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 '''Here lives your main measure and plot code'''
 # If you have already measured the needed configs,
 # then uncomment the following line!
-lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [0])
+#lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list = [0])
 
 
 # Here you can call the plot function, with lists (!) for beta,
@@ -590,8 +627,8 @@ lattice_measuring(beta_list=beta_all_setted, lattice_list=setted_lattice, extern
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-lattice_plotting(direc='Analyse/256x256/Observablen/', beta_list=beta_all_setted, lattice_list=setted_lattice,
-                                  external_field_list=[0], observables=observables, OnlyBig = False)
+#lattice_plotting(direc='Analyse/256x256/Observablen/', beta_list=beta_all_setted, lattice_list=setted_lattice,
+#                                  external_field_list=[0], observables=observables, OnlyBig = False)
 #lattice_plotting_double(direc1='Analyse/256x256/Test500FirstSkips/Run2_200Konfigs_Fine/', direc2='Analyse/256x256/Test500FirstSkips/Run2_100Konfigs_Fine/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables)
 #lattice_plotting_three(direc1='Analyse/256x256/TestAusreißer/1/', direc2='Analyse/256x256/TestAusreißer/2/', direc3='Analyse/256x256/TestAusreißer/3/', beta_list=beta_test, lattice_list=setted_lattice,
@@ -600,5 +637,7 @@ lattice_plotting(direc='Analyse/256x256/Observablen/', beta_list=beta_all_setted
 #                 external_field_list=[0], observables=observables, OnlyBig = False)
 
 #lattice_measuring(beta_list=[0.39], lattice_list=setted_lattice, external_field_list = [0])
+#plot_phasediagram()
+
 
  
