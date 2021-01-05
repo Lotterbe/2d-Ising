@@ -27,22 +27,26 @@ def hysterese_measuring(external_field_list, beta=0.49):
     #metro.itersteps = 1020 * metro.total_number_of_points
     #metro.first_skip = 20 * metro.total_number_of_points
     #metro.skip = 10 * metro.total_number_of_points
+    config_array = [configs[-1]]
     for b_field in external_field_list:
         print('Start measuring...!')
         print(counter)
         metro.reset()
         metro.b_ext = b_field
         configsneu = metro.start_simulation()
+        config_array.append(configsneu[-1])
         observables.all_configs = configsneu
         magneti_err.append(observables.jackknife(observables.nabs_m_per_config, 10))
         # b_ext wird fuer magnetisation nicht benoetigt
         #observables.b_ext() = b_field
         observables.nabs_magnetisation()
         magneti.append(observables.nabs_m_average)
-        filename = 'Analyse/128x128/Hysterese/' + '128x128' + 'lattice_beta_' \
+        #filename = 'Analyse/128x128/Hysterese/' + '128x128' + 'lattice_beta_' \
+        #                   + str(beta).replace('.', '') + 'external_field_' + str(b_field)
+        filename = 'Analyse/128x128/Hysterese/Visual/' + '128x128' + 'lattice_beta_' \
                            + str(beta).replace('.', '') + 'external_field_' + str(b_field)
         counter += 1
-    np.savez_compressed(filename, x=external_field_list, y=magneti, yerr=magneti_err)
+    np.savez_compressed(filename, x=external_field_list, y=magneti, yerr=magneti_err, configs=config_array)
     return magneti, magneti_err
 
 
@@ -85,7 +89,7 @@ e size
     plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201207_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()
-    
+
 def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     """
 
@@ -115,8 +119,8 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     y_data2 = data2['y']
     y_err2 = data2['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
-    legend1 = r'128x128' 
-    legend2 = r'256x256' 
+    legend1 = r'128x128'
+    legend2 = r'256x256'
     plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data1, yerr=y_err1, color = 'blue', fmt='-o', ecolor='red', label=legend1, zorder = 1)
     plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
@@ -132,7 +136,7 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     plotname = 'Analyse/256x256/Hysterese/'  + 'VergleichGitterHysterese_' + 'beta' + str(beta) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()
-    
+
 def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_list=[0]):
     """
 
@@ -168,7 +172,7 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     y_data3 = data3['y']
     y_err3 = data3['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
-    legend1 = r'$\beta$ = 0.49' 
+    legend1 = r'$\beta$ = 0.49'
     legend2 = r'$\beta$ = 0.45'
     legend3 = r'$\beta$ = 0.43'
     plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
@@ -189,7 +193,7 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()
 
-    
+
 def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     """
 
@@ -245,37 +249,37 @@ b_fields = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.1
             #-0.16, -0.17,
             #-0.18, -0.19, -0.2, -0.19, -0.18, -0.17, -0.16, -0.15,
             #ä, 0.16, 0.17, 0.18, 0.19, 0.2
-b_fields_smaller = [0, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 
+b_fields_smaller = [0, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075,
                     0.08, 0.085, 0.09, 0.095, 0.1, 0.105, 0.11, 0.115, 0.12, 0.125,
-            0.13, 0.135, 0.14, 0.145, 0.15, 0.145, 0.14, 0.145, 0.13, 0.125, 0.12, 0.115, 0.11, 0.105, 0.10, 
+            0.13, 0.135, 0.14, 0.145, 0.15, 0.145, 0.14, 0.145, 0.13, 0.125, 0.12, 0.115, 0.11, 0.105, 0.10,
             0.095, 0.09, 0.085, 0.08, 0.075, 0.07, 0.065, 0.06, 0.055, 0.05, 0.045, 0.04, 0.035, 0.03, 0.025,
-            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045, 
-            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.105, -0.11, 
+            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045,
+            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.105, -0.11,
             -0.115, -0.12, -0.125, -0.13, -0.135, -0.14, -0.145, -0.15, -0.145, -0.14, -0.135, -0.13, -0.125,
-            -0.12, -0.115, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06, 
+            -0.12, -0.115, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06,
             -0.055, -0.05, -0.045, -0.04, -0.035, -0.03, -0.025, -0.02, -0.015, -0.01, -0.005, 0, 0.005, 0.01,
-            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085, 
+            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085,
             0.09, 0.095, 0.1, 0.105, 0.11, 0.115, 0.12, 0.125, 0.13, 0.135, 0.14, 0.145, 0.15]
 
-b_fields_smaller_plot = [0, 0, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 
+b_fields_smaller_plot = [0, 0, 0.01, 0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075,
                     0.08, 0.085, 0.09, 0.095, 0.1, 0.105, 0.11, 0.115, 0.12, 0.125,
-            0.13, 0.135, 0.14, 0.145, 0.15, 0.145, 0.14, 0.145, 0.13, 0.125, 0.12, 0.115, 0.11, 0.105, 0.10, 
+            0.13, 0.135, 0.14, 0.145, 0.15, 0.145, 0.14, 0.145, 0.13, 0.125, 0.12, 0.115, 0.11, 0.105, 0.10,
             0.095, 0.09, 0.085, 0.08, 0.075, 0.07, 0.065, 0.06, 0.055, 0.05, 0.045, 0.04, 0.035, 0.03, 0.025,
-            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045, 
-            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.105, -0.11, 
+            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045,
+            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.105, -0.11,
             -0.115, -0.12, -0.125, -0.13, -0.135, -0.14, -0.145, -0.15, -0.145, -0.14, -0.135, -0.13, -0.125,
-            -0.12, -0.115, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06, 
+            -0.12, -0.115, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06,
             -0.055, -0.05, -0.045, -0.04, -0.035, -0.03, -0.025, -0.02, -0.015, -0.01, -0.005, 0, 0.005, 0.01,
-            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085, 
+            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085,
             0.09, 0.095, 0.1, 0.105, 0.11, 0.115, 0.12, 0.125, 0.13, 0.135, 0.14, 0.145, 0.15]
 
-b_fields_variation = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.105, 0.10, 
+b_fields_variation = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.105, 0.10,
             0.095, 0.09, 0.085, 0.08, 0.075, 0.07, 0.065, 0.06, 0.055, 0.05, 0.045, 0.04, 0.035, 0.03, 0.025,
-            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045, 
-            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.15, -0.11, 
-            -0.12, -0.13, -0.14, -0.15,  -0.14, -0.13, -0.12, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06, 
+            0.02, 0.015, 0.01, 0.005, 0, -0.005, -0.01, -0.015, -0.02, -0.025, -0.03, -0.035, -0.04, -0.045,
+            -0.05, -0.055, -0.06, -0.065, -0.07, -0.075, -0.08, -0.085, -0.09, -0.095, -0.1, -0.15, -0.11,
+            -0.12, -0.13, -0.14, -0.15,  -0.14, -0.13, -0.12, -0.11, -0.105, -0.10, -0.095, -0.09, -0.085, -0.08, -0.075, -0.07, -0.065, -0.06,
             -0.055, -0.05, -0.045, -0.04, -0.035, -0.03, -0.025, -0.02, -0.015, -0.01, -0.005, 0, 0.005, 0.01,
-            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085, 
+            0.015, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.065, 0.07, 0.075, 0.08, 0.085,
             0.09, 0.095, 0.1, 0.12, 0.13, 0.14, 0.15]
 beta_list = [0.43, 0.45, 0.49]
 #magneti_vals, magneti_err = hysterese_measuring(b_fields_smaller)
@@ -287,3 +291,4 @@ beta_list = [0.43, 0.45, 0.49]
 #hysterese_plot_newcurve('Analyse/128x128/Hysterese/', beta=0.43, external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_two('Analyse/128x128/Hysterese/', 'Analyse/256x256/Hysterese/Neu_201204/', external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+hysterese_measuring(beta=0.49, external_field_list=b_fields_smaller_plot)
