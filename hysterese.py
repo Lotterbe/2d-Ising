@@ -14,7 +14,7 @@ def hysterese_measuring(external_field_list, beta=0.49):
     magneti = []
     magneti_err = []
     counter = 0
-    metro = Metropolis(*(128, 128), beta=beta, flip=False)
+    metro = Metropolis(*(128,128), beta=beta, flip=False)
     metro.itersteps = 2200 * metro.total_number_of_points
     metro.first_skip = 200 * metro.total_number_of_points
     metro.skip = 100 * metro.total_number_of_points
@@ -28,7 +28,7 @@ def hysterese_measuring(external_field_list, beta=0.49):
     #metro.first_skip = 20 * metro.total_number_of_points
     #metro.skip = 10 * metro.total_number_of_points
     for b_field in external_field_list:
-        print('Start measuring...!')
+        #print('Start measuring...!')
         print(counter)
         metro.reset()
         metro.b_ext = b_field
@@ -39,7 +39,8 @@ def hysterese_measuring(external_field_list, beta=0.49):
         #observables.b_ext() = b_field
         observables.nabs_magnetisation()
         magneti.append(observables.nabs_m_average)
-        filename = 'Analyse/128x128/Hysterese/' + '128x128' + 'lattice_beta_' \
+        #Insert your file path in the first ''
+        filename = 'Analyse/128x128/Hysterese/' + '210107_20Konfigs_' + '128x128' + 'lattice_beta_' \
                            + str(beta).replace('.', '') + 'external_field_' + str(b_field)
         counter += 1
     np.savez_compressed(filename, x=external_field_list, y=magneti, yerr=magneti_err)
@@ -49,7 +50,7 @@ def hysterese_measuring(external_field_list, beta=0.49):
 def hysterese_plot(direc, beta=0.49, external_b_field_list=[0]):
     """
 e size
-    :param b_field: va
+    :param b_field: all values for external b-field
     :param beta: all values for beta
     :param y_data: observable values
     :param y_err: the error for the observable values
@@ -65,7 +66,7 @@ e size
     #filename = filepart + '128x128' + 'lattice_beta_' \
     #                    + str(beta).replace('.', '') + 'external_field_0.15' + '.npz'
     data = np.load(filename)
-    external_b_field = external_b_field_list
+    external_b_field = external_b_field_list 
     y_data = data['y']
     y_err = data['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
@@ -78,7 +79,7 @@ e size
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.legend(loc='best', framealpha=0.5, title = '256x256', title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '(256x256)', title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
     #plotname = 'Analyse/128x128/Hysterese/'  + 'Hysterese_' + '128x128' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201208_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
@@ -115,8 +116,8 @@ def hysterese_plot_two(direc1, direc2, beta=0.49, external_b_field_list=[0]):
     y_data2 = data2['y']
     y_err2 = data2['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
-    legend1 = r'128x128' 
-    legend2 = r'256x256' 
+    legend1 = r'(128x128)' 
+    legend2 = r'(256x256)' 
     plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data1, yerr=y_err1, color = 'blue', fmt='-o', ecolor='red', label=legend1, zorder = 1)
     plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
@@ -149,13 +150,13 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     filepart3 = direc3
     #filename = filepart + '256x256' + 'lattice_beta_' \
     #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
-    #filename = filepart + 'Nochmal_' + '256x256' + 'lattice_beta_' \
+    #filename2 = filepart2 + 'Nochmal_' + '256x256' + 'lattice_beta_' \
     #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
-    filename1 = filepart1 + '128x128' + 'lattice_beta_' \
+    filename1 = filepart1 + 'Nochmal_'  + '128x128' + 'lattice_beta_' \
                         + str(0.49).replace('.', '') + 'external_field_0.15' + '.npz'
-    filename2 = filepart2 + '128x128' + 'lattice_beta_' \
+    filename2 = filepart2 + '128x128' +  'lattice_beta_' \
                         + str(0.45).replace('.', '') + 'external_field_0.15'  + '.npz'
-    filename3 = filepart3 + '128x128' + 'lattice_beta_' \
+    filename3 = filepart3  + '128x128' + 'lattice_beta_' \
                         + str(0.43).replace('.', '') + 'external_field_0.15'  + '.npz'
     data1 = np.load(filename1)
     data2 = np.load(filename2)
@@ -168,9 +169,14 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     y_data3 = data3['y']
     y_err3 = data3['yerr']
     plt.rcParams['figure.figsize'] = 16, 9
-    legend1 = r'$\beta$ = 0.49' 
-    legend2 = r'$\beta$ = 0.45'
-    legend3 = r'$\beta$ = 0.43'
+    legend1 = r'$\beta = 0.49$' 
+    legend2 = r'$\beta = 0.45$'
+    legend3 = r'$\beta = 0.43$'
+    #bD1, bU1, bD2, bU2, bD3, bU3 = hyst_width_var(direc1, direc2, direc3, external_b_field, txtFile=True)
+    hyst_width_var(direc1, direc2, direc3, external_b_field, txtFile=True)
+    #plt.fill_between([bD1, bU1], -1, 1,  color='papayawhip')
+    #plt.fill_between([bD2, bU2], -1, 1,  color='papayawhip')
+    #plt.fill_between([bD3, bU3], -1, 1,  color='papayawhip')
     plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
     plt.errorbar(x=external_b_field, y=y_data1, yerr=y_err1, color = 'blue', fmt='-o', ecolor='red', label=legend1, zorder = 1)
     plt.plot(external_b_field[0], y_data2[0], 'D', color='black', zorder = 2)
@@ -183,9 +189,83 @@ def hysterese_plot_three(direc1, direc2, direc3, beta=0.49, external_b_field_lis
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.legend(loc='best', framealpha=0.5, title = r'128x128', title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = r'(128x128)', title_fontsize = 24, fontsize=24)
+    #plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), framealpha=0.5, title = r'(128x128), $\beta = 0.49$', title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
+    #plt.tight_layout()
     plotname = 'Analyse/128x128/Hysterese/'  + 'VergleichBetaHysterese' + '.pdf'
+    plt.savefig(plotname, bbox_inches='tight')
+    plt.close()
+    
+def hysterese_plot_four(direc1, direc2, direc3, direc4, beta=0.49, external_b_field_list=[0]):
+    """
+
+    :param beta: all values for beta
+    :param y_data: observable values
+    :param y_err: the error for the observable values
+    :param name: of the observable (e.g. energy)
+    :param legend: for the plot
+    :param lat: lattice size
+    :param b_field: value of magnetic field
+    """
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    filepart4 = direc4
+    #filename = filepart + '256x256' + 'lattice_beta_' \
+    #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
+    #filename2 = filepart2 + 'Nochmal_' + '256x256' + 'lattice_beta_' \
+    #                    + str(beta).replace('.', '') + 'external_field_015'  + '.npz'
+    filename1 = filepart1 + 'Nochmal_' + '64x64' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15' + '.npz'
+    filename2 = filepart2 + 'Nochmal_'+ '128x128' +  'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    filename3 = filepart3 + 'Nochmal_' + '256x256' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_015'  + '.npz'
+    filename4 = filepart4 + '210106_' + '512x512' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    data1 = np.load(filename1)
+    data2 = np.load(filename2)
+    data3 = np.load(filename3)
+    data4 = np.load(filename4)
+    external_b_field = external_b_field_list
+    y_data1 = data1['y']
+    y_err1 = data1['yerr']
+    y_data2 = data2['y']
+    y_err2 = data2['yerr']
+    y_data3 = data3['y']
+    y_err3 = data3['yerr']
+    y_data4 = data4['y']
+    y_err4 = data4['yerr']
+    plt.rcParams['figure.figsize'] = 16, 9
+    legend1 = r'$(64x64)$' 
+    legend2 = r'$(128x128)$'
+    legend3 = r'$(256x256)$'
+    legend4 = r'$(512x512)$'
+    # Calculation of the mean value of the des-/ascending curve is in 
+    #  hyst_width b_meanup2/b_meandown2
+    b_MeanW128, b_StdW128, b_MeanDown128, b_MeanUp128 = hyst_width_var(direc1, direc2, direc3, external_b_field)
+    hyst_width_calc(filepart1, filepart2, filepart3, filepart4, external_b_field, txtFile=True)
+    #b_StdDown128, b_StdUp128, b_MeanDown128, b_MeanUp128 = hyst_width(direc1, direc2, direc3, external_b_field)
+    plt.fill_between([b_MeanDown128-b_StdW128, b_MeanDown128+b_StdW128], -1, 1,  color='papayawhip')
+    plt.fill_between([b_MeanUp128-b_StdW128, b_MeanUp128+b_StdW128], -1, 1,  color='papayawhip')
+    plt.plot(external_b_field[0], y_data1[0], 'D', color='black', zorder = 2)
+    plt.errorbar(x=external_b_field, y=y_data1, yerr=y_err1, color = 'blue', fmt='-o', ecolor='red', label=legend1, zorder = 1)
+    plt.plot(external_b_field[0], y_data2[0], 'D', color='black', zorder = 2)
+    plt.errorbar(x=external_b_field, y=y_data2, yerr=y_err2, color = 'purple', fmt='-o', ecolor='red', label=legend2, zorder = 1)
+    plt.plot(external_b_field[0], y_data3[0], 'D', color='black', zorder = 2)
+    plt.errorbar(x=external_b_field, y=y_data3, yerr=y_err3, color = 'hotpink', fmt='-o', ecolor='red', label=legend3, zorder = 1)
+    plt.plot(external_b_field[0], y_data4[0], 'D', color='black', label='Startpunkt', zorder = 2)
+    plt.errorbar(x=external_b_field, y=y_data4, yerr=y_err4, color = 'orange', fmt='-o', ecolor='red', label=legend4, zorder = 1)
+    plt.axhline(y=0, xmin=-0.2, xmax=2, color='black')
+    plt.axvline(x=0, ymin=-1.2, ymax=1.2, color='black')
+    plt.xlabel(r'H', fontsize=24)
+    plt.ylabel(r'M', fontsize=24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.legend(loc='best', framealpha=0.5, title = r'$\beta = 0.49$', title_fontsize = 24, fontsize=24)
+    #plt.legend(loc='best', framealpha=0.5, fontsize=24)
+    plotname = 'Analyse/256x256/Hysterese/'  + 'VergleichBetaHystereseAlle_HystBreite' + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()
 
@@ -224,13 +304,180 @@ def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     plt.ylabel(r'M', fontsize=24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
-    plt.legend(loc='best', framealpha=0.5, title = '128x128', title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '(128x128)', title_fontsize = 24, fontsize=24)
     #plt.legend(loc='best', framealpha=0.5, fontsize=24)
     plotname = 'Analyse/128x128/Hysterese/'  + 'HystereseNeukurve_' + '128x128' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201208_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     #plotname = 'Analyse/256x256/Hysterese/Neu_201204/'  + 'Hysterese_201207_' + '256x256' + '_lattice_' + 'beta' + str(beta) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()
+    
+def hyst_width_var(direc1, direc2, direc3, external_b_field, txtFile = False):
+    '''
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    filename1 = filepart1 + '128x128' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15' + '.npz'
+    filename2 = filepart2 + 'Nochmal_' + '128x128' +  'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    filename3 = filepart3 + '210107_20Konfigs_'  + '128x128' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    data1 = np.load(filename1)
+    data2 = np.load(filename2)
+    data3 = np.load(filename3)
+    y_data1 = data1['y']
+    y_err1 = data1['yerr']
+    y_data2 = data2['y']
+    y_err2 = data2['yerr']
+    y_data3 = data3['y']
+    y_err3 = data3['yerr']
+    # Mean of the y_data
+    y_M1_down = np.mean(y_data1[72:76])
+    y_M2_down = np.mean(y_data2[72:76])
+    y_M3_down = np.mean(y_data3[69:74])
+    y_M1_up = np.mean(y_data1[129:134])
+    y_M2_up = np.mean(y_data2[132:137])
+    y_M3_up = np.mean(y_data3[131:136])
+    '''
+    # Mean of the 
+    b_M1_down = np.mean(external_b_field[72:76])
+    b_M2_down = np.mean(external_b_field[72:76])
+    b_M3_down = np.mean(external_b_field[69:75])
+    b_M1_up = np.mean(external_b_field[129:133])
+    b_M2_up = np.mean(external_b_field[132:136])
+    b_M3_up = np.mean(external_b_field[131:135])
+    # Width of the hsterese curves
+    W1 = b_M1_up + abs(b_M1_down)
+    W2 = b_M2_up + abs(b_M2_down)
+    W3 = b_M3_up + abs(b_M3_down)
+    # Mean and StdDevi of the widths
+    M_W = np.mean((W1, W2, W3))
+    SD_W = np.std((W1, W2, W3))
+    # Mean b_field values of the descending and ascending curves
+    b_DownM = np.mean((b_M1_down, b_M2_down, b_M3_down))
+    b_DownSD = np.std((b_M1_down, b_M2_down, b_M3_down))
+    b_UpM = np.mean((b_M1_up, b_M2_up, b_M3_up))
+    b_UpSD = np.std((b_M1_up, b_M2_up, b_M3_up))
+    if (txtFile == True):
+        np.savetxt('Analyse/128x128/Hysterese/' + 'WidthData(128x128)_3Runs.txt', \
+                   (W1, W2, W3, M_W, SD_W, b_DownM, b_UpM), \
+                    header = 'WidthR1, WidthR2, WidthR3, MeanWidth, StdDeviWidth, DescendingMeanBField, AscendingMeanBField' )
+    #return M_W, SD_W, b_M2_down, b_M2_up
+    #return b_DownSD, b_UpSD, b_M2_down, b_M2_up
+    #return b_M1_down, b_M1_up, b_M2_down, b_M2_up, b_M3_down, b_M3_up 
+
+def hyst_width_calc_three(direc1, direc2, direc3, external_b_field, txtFile = False):
+    '''
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    filename1 = filepart1 + '210107_15Konfigs_' + '128x128' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15' + '.npz'
+    filename2 = filepart2 + '210107_20Konfigs_' + '128x128' +  'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    filename3 = filepart3 + '210107_30Konfigs_'  + '128x128' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    data1 = np.load(filename1)
+    data2 = np.load(filename2)
+    data3 = np.load(filename3)
+    y_data1 = data1['y']
+    y_data2 = data2['y']
+    y_data3 = data3['y']
+    # Mean of the y_data
+    y_M1_down = np.mean(y_data1[72:76])
+    y_M2_down = np.mean(y_data2[72:76])
+    y_M3_down = np.mean(y_data3[69:74])
+    y_M1_up = np.mean(y_data1[129:134])
+    y_M2_up = np.mean(y_data2[132:137])
+    y_M3_up = np.mean(y_data3[131:136])
+    print(y_data1[129:133])
+    '''
+    # Mean of the 
+    b_M1_down = np.mean(external_b_field[71:75])
+    b_M2_down = np.mean(external_b_field[69:73])
+    b_M3_down = np.mean(external_b_field[70:74])
+    b_M1_up = np.mean(external_b_field[129:133])
+    b_M2_up = np.mean(external_b_field[131:135])
+    b_M3_up = np.mean(external_b_field[129:133])
+    # Width of the hsterese curves
+    W1 = b_M1_up + abs(b_M1_down)
+    W2 = b_M2_up + abs(b_M2_down)
+    W3 = b_M3_up + abs(b_M3_down)
+    # Mean and StdDevi of the widths
+    M_W = np.mean((W1, W2, W3))
+    SD_W = np.std((W1, W2, W3))
+    # Mean b_field values of the descending and ascending curves
+    b_DownM = np.mean((b_M1_down, b_M2_down, b_M3_down))
+    b_DownSD = np.std((b_M1_down, b_M2_down, b_M3_down))
+    b_UpM = np.mean((b_M1_up, b_M2_up, b_M3_up))
+    b_UpSD = np.std((b_M1_up, b_M2_up, b_M3_up))
+    if (txtFile == True):
+        np.savetxt('Analyse/128x128/Hysterese/' + 'WidthData(128x128)_Konfigs.txt', \
+                   (W1, W2, W3, M_W, SD_W), \
+                    header = 'WidthR1, WidthR2, WidthR3, MeanWidth, StdDeviWidth' )
+    #return M_W, SD_W, b_M2_down, b_M2_up
+    #return b_DownSD, b_UpSD, b_M2_down, b_M2_up
+    #return b_M1_down, b_M1_up, b_M2_down, b_M2_up, b_M3_down, b_M3_up 
+    
+
+def hyst_width_calc(direc1, direc2, direc3, direc4, external_b_field, txtFile = False):
+    '''
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    filepart4 = direc4
+    filename1 = filepart1 + 'Nochmal_'+ '64x64' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15' + '.npz'
+    filename2 = filepart2 + 'Nochmal_' + '128x128' +  'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    filename3 = filepart3 + 'Nochmal_'+ '256x256' + 'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_015' + '.npz'
+    filename4 = filepart4 + '210106_' + '512x512' +  'lattice_beta_' \
+                        + str(0.49).replace('.', '') + 'external_field_0.15'  + '.npz'
+    data1 = np.load(filename1)
+    data2 = np.load(filename2)
+    data3 = np.load(filename3)
+    data4 = np.load(filename4)
+    y_data1 = data1['y']
+    y_data2 = data2['y']
+    y_data3 = data3['y']
+    y_data4 = data4['y']
+    print(y_data4[68:73])
+    print(y_data4[129:134])
+    # Mean of the y_data
+    y_M1_down = np.mean(y_data1[72:76])
+    y_M2_down = np.mean(y_data2[72:76])
+    y_M3_down = np.mean(y_data3[69:74])
+    y_M1_up = np.mean(y_data1[129:134])
+    y_M2_up = np.mean(y_data2[132:137])
+    y_M3_up = np.mean(y_data3[131:136])
+    '''
+    # Mean of the 
+    b_M1_down = np.mean(external_b_field[68:72])
+    b_M2_down = np.mean(external_b_field[72:76])
+    b_M3_down = np.mean(external_b_field[68:73])
+    b_M4_down = np.mean(external_b_field[68:73])
+    b_M1_up = np.mean(external_b_field[132:136])
+    b_M2_up = np.mean(external_b_field[132:136])
+    b_M3_up = np.mean(external_b_field[129:133])
+    b_M4_up = np.mean(external_b_field[129:134])
+    # Width of the hsterese curves
+    W1 = b_M1_up + abs(b_M1_down)
+    W2 = b_M2_up + abs(b_M2_down)
+    W3 = b_M3_up + abs(b_M3_down)
+    W4 = b_M4_up + abs(b_M4_down)
+    # Mean and StdDevi of the widths
+    M_W = np.mean((W1, W2, W3, W4))
+    SD_W = np.std((W1, W2, W3, W4))
+    if (txtFile == True):
+        np.savetxt('Analyse/256x256/Hysterese/' + 'WidthData.txt', \
+                   (W1, W2, W3, W4), \
+                    header = '(64x64), (128x128), (256x256), (512x512)' )
+    #return M_W, SD_W, b_M2_down, b_M2_up
+    #return b_DownSD, b_UpSD, b_M2_down, b_M2_up
+    #return b_M1_down, b_M1_up, b_M2_down, b_M2_up, b_M3_down, b_M3_up 
+    #'''
 
 
 b_fields = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12,
@@ -286,4 +533,9 @@ beta_list = [0.43, 0.45, 0.49]
 #hysterese_plot('Analyse/256x256/Hysterese/Neu_201204/', beta=0.49, external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_newcurve('Analyse/128x128/Hysterese/', beta=0.43, external_b_field_list=b_fields_smaller_plot)
 #hysterese_plot_two('Analyse/128x128/Hysterese/', 'Analyse/256x256/Hysterese/Neu_201204/', external_b_field_list=b_fields_smaller_plot)
-#hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+#hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/256x256/Hysterese/Neu_201204/', 'Analyse/64x64/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+hysterese_plot_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+#hysterese_plot_four('Analyse/64x64/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/256x256/Hysterese/Neu_201204/', 'Analyse/512x512/Hysterese/', external_b_field_list=b_fields_smaller_plot)
+
+
+#hyst_width_calc_three('Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', 'Analyse/128x128/Hysterese/', b_fields_smaller_plot, True)
