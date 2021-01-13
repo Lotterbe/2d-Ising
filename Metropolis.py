@@ -24,23 +24,9 @@ class Metropolis:
         self.NY = y_lenght
         self.total_number_of_points = self.NX * self.NY
         # check if (itersteps - first_skip) % skip == 0
-        
-        #self.itersteps = 2220 * self.total_number_of_points
-        #self.first_skip = 220 * self.total_number_of_points
-        #self.skip = 20 * self.total_number_of_points
         self.itersteps = 4500 * self.total_number_of_points
         self.first_skip = 500 * self.total_number_of_points
         self.skip = 20 * self.total_number_of_points
-        '''
-        if 0.430 < beta < 0.450:
-            self.itersteps = 2220 * self.total_number_of_points
-            self.first_skip = 220 * self.total_number_of_points
-            self.skip = 20 * self.total_number_of_points
-        else:
-            self.itersteps = 1020 * self.total_number_of_points
-            self.first_skip = 20 * self.total_number_of_points
-            self.skip = 10 * self.total_number_of_points
-        '''
         # J = inter
         self.inter = 1
         self.beta = beta
@@ -78,14 +64,6 @@ class Metropolis:
         j = random_number % self.NY
         return i, j
 
-    def exponential_delta(self, dE):
-        """Calculates the change in the action
-
-        :param dE: change in energy
-        :return: change in action
-        """
-        return np.exp(-self.beta * dE)
-
     def save(self):
         """Saves actual config in an array """
         # copy is very important here!
@@ -117,8 +95,10 @@ class Metropolis:
                      + self.actual_config[nx, (ny + 1) % self.NY]
         dE = 2 * self.inter * self.actual_config[nx, ny] * neighbours \
              - self.b_ext * self.actual_config[nx, ny] * (-1)
+        # insgesamt + weil - E = - (- salt) = - sneu
+        # faktor zwei oder in bext reinziehen
         r = np.random.random(1)[0]
-        if self.exponential_delta(dE) >= r:
+        if np.exp(-self.beta * dE) >= r:
             self.actual_config[nx, ny] *= (-1)
             # Vermeidung von Autokorrelationen
         if step >= self.first_skip and step % self.skip == 0:
@@ -184,6 +164,15 @@ class Observables:
                             / self.total_number_of_points
         self.m_average = np.mean(self.m_per_config)
 
+    def configs_magnetisation(self, configs):
+        """Calculates the magnetisation of lattice
+
+        """
+        ret = np.abs(np.sum(np.sum(configs, axis=2),
+                                          axis=1)) \
+                            / self.total_number_of_points
+        return ret
+
     def nabs_magnetisation(self):
         self.nabs_m_per_config = np.sum(np.sum(self.all_configs, axis=2),
                                           axis=1) \
@@ -195,13 +184,25 @@ class Observables:
         """Calculates the energy of the lattice
 
         """
-        self.energy_per_config = - self.beta * self.inter * np.sum(np.sum((
+        #self.beta *
+        self.energy_per_config = -  self.beta*self.inter * np.sum(np.sum((
                 self.all_configs * (np.roll(self.all_configs, shift=1,
                                             axis=1)
                                     + np.roll(self.all_configs, shift=1,
                                               axis=2))), axis=2), axis=1) \
                                  - self.b_ext * np.sum(self.all_configs)
         self.energy_average = np.mean(self.energy_per_config)
+
+    def configs_energy(self, configs):
+        ret = -  self.beta*self.inter * np.sum(np.sum((configs * (np.roll(configs, shift=1,axis=1)
+                                                + np.roll(configs, shift=1,axis=2))), axis=2), axis=1) \
+                                                 - self.b_ext * np.sum(configs)
+        return ret
+
+    def debug_energy(self, beta=None):
+        if beta == None:
+            beta = self.beta
+        return -16 * np.sinh(8*beta)/(12+2*np.cosh(8*beta))
 
     def specific_heat(self):
         """Calculates the specific heat, the variance of energy
@@ -222,6 +223,7 @@ class Observables:
                 squared_magnetisation_average - self.m_average ** 2
         ) * self.total_number_of_points
 
+
     def measure_observables(self):
         """This method starts the whole measuring of the observables
          for the simulated lattice
@@ -232,25 +234,16 @@ class Observables:
         self.specific_heat()
         self.magnetisation()
         self.magnetic_susceptibility()
-        self.energy_var = self.jackknife(self.energy_per_config,
-                                         del_number=10)
-        self.magnetisation_var = self.jackknife(self.m_per_config,
-                                                del_number=10)
-        self.heat_var = self.beta * self.jackknife_for_var(
-            self.energy_per_config, del_number=10
-        ) / self.total_number_of_points
-        self.chi_var = np.sqrt(self.beta) * self.jackknife_for_var(
-            self.m_per_config, del_number=10
-        ) * self.total_number_of_points
+
+        variances = self.bootstrap(100)
+        self.energy_var = variances[0]
+        self.magnetisation_var = variances[1]
+        self.heat_var = variances[2]
+        self.chi_var = variances[3]
         self.OnsagerEnergy()
         self.YangMagn()
 
     def save_simulation(self, filename):
-        #array_list = ['#' + str(len(self.all_configs)) + ' configs',
-        #              '#' + str(self.total_number_of_points) + ' lattice points',
-        #              '#' + ' beta = ' + str(self.beta),
-        #              '#' + ' interaction = ' + str(self.inter),
-        #              '#' + ' external magnetic field = ' + str(self.b_ext)]
         array_list = ['#' + str(len(self.all_configs)) + ' Konfigurationen',
                       '#' + str(self.total_number_of_points) + ' Gitterpunkte',
                       '#' + ' beta =' + str(self.beta),
@@ -265,7 +258,7 @@ class Observables:
                             Onsager_Energy = self.onsager_energy,
                             Yang_Magnetisation = self.yang_magnetisation)
 
-    def jackknife(self, observable_per_config, del_number=1):
+    def jackknife_onedel(self, observable_per_config):
         """Calculates the error with jackknife for primary observables.
 
         :param observable_per_config: The observable for which
@@ -276,15 +269,15 @@ class Observables:
         """
         observable = observable_per_config
         number_of_configs = len(observable)
-        obs_part = [np.mean(np.roll(observable, shift=-part * del_number,
-                                    axis=0)[:- del_number])
-                    for part in range(int(number_of_configs/del_number))]
+        obs_part = [np.mean(np.roll(observable, shift=-part,
+                                    axis=0)[:-1])
+                    for part in range(int(number_of_configs))]
         obs_part_mean = np.mean(obs_part)
-        obs_var = (number_of_configs - del_number) / number_of_configs * \
+        obs_var = (number_of_configs - 1) / number_of_configs * \
                   np.sum((np.array(obs_part) - obs_part_mean) ** 2)
         return np.sqrt(obs_var)
 
-    def jackknife_for_var(self, observable_per_config, del_number=10):
+    def jackknife_onedel_for_var(self, observable_per_config):
         """Calculates the error with jackknife for secundary observables.
 
         :param observable_per_config: The primary observable
@@ -296,18 +289,40 @@ class Observables:
         base_observable = observable_per_config
         number_of_configs = len(base_observable)
         obs_base_part_squared = np.array([np.mean(
-            np.roll(base_observable, shift=-part * del_number,
-                    axis=0)[:- del_number]
-        ) ** 2 for part in range(int(number_of_configs/del_number))])
+            np.roll(base_observable, shift=-part,
+                    axis=0)[:- 1]
+        ) ** 2 for part in range(int(number_of_configs))])
         obs_base_square_part = np.array([np.mean(
-            np.roll(base_observable ** 2, shift=-part * del_number,
-                    axis=0)[:- del_number]
-        ) for part in range(int(number_of_configs/del_number))])
+            np.roll(base_observable ** 2, shift=-part,
+                    axis=0)[:- 1]
+        ) for part in range(int(number_of_configs))])
         obs_part = obs_base_square_part - obs_base_part_squared
         obs_part_mean = np.mean(obs_part)
-        obs_var = (number_of_configs - del_number) / number_of_configs * \
+        obs_var = (number_of_configs - 1) / number_of_configs * \
                   np.sum((obs_part - obs_part_mean) ** 2)
         return np.sqrt(obs_var)
+
+    def bootstrap(self, samples):
+        number_of_configs = self.save_lenght
+        energy_arr = np.zeros(shape=(samples, number_of_configs))
+        magneti_arr = np.zeros(shape=(samples, number_of_configs))
+        heat_arr = np.zeros(shape=(samples, number_of_configs))
+        chi_arr = np.zeros(shape=(samples, number_of_configs))
+        for s in range(samples):
+            new_conf_arr = np.zeros_like(self.all_configs)
+            for conf_num in range(number_of_configs):
+                rnumber = np.random.randint(0,int(number_of_configs))
+                new_conf_arr[conf_num] = self.all_configs[rnumber]
+            energy_arr[s] = self.configs_energy(new_conf_arr)
+            meansquare = np.mean(energy_arr[s]**2)
+            squaremean = np.mean(energy_arr[s])**2
+            heat_arr[s] = self.beta**2*(meansquare - squaremean)
+            magneti_arr[s] = self.configs_magnetisation(new_conf_arr)
+            meansquare = np.mean(magneti_arr[s]**2)
+            squaremean = np.mean(magneti_arr[s])**2
+            chi_arr[s] = self.beta * (meansquare - squaremean) * self.total_number_of_points
+        return np.std(energy_arr), np.std(magneti_arr), np.std(heat_arr)/self.total_number_of_points, np.std(chi_arr)
+
 
     def OnsagerEnergy(self):
         # Some variables for simpler calculating

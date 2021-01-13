@@ -4,6 +4,7 @@ import matplotlib.cm as cm
 import matplotlib.animation as animation
 from matplotlib.widgets import Slider
 from Metropolis import Metropolis, Observables
+from scipy.special import ellipk as elli
 
 
 class Ising_Plot:
@@ -60,7 +61,7 @@ def lattice_measuring(beta_list, lattice_list, external_field_list):
                 configs = metro.start_simulation()
                 observables = Observables(configs, beta=b)
                 observables.measure_observables()
-                filename = 'Analyse/256x256/FinalTestVariance/Run3/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                filename = 'Analyse/256x256/FinalTestSkips/Run3_200Konfigs/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                            + str(b).replace('.', '') + 'external_field_' + str(b_field)
                 observables.save_simulation(filename)
                 del metro, observables
@@ -117,10 +118,15 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
         plt.ylabel(r'U', fontsize=24)
-        plt.plot(beta, ons_energy, 'r+', markersize=10, label='Onsager Energie')
+        ons_korr = np.ones(len(beta))
+        counter = 0
+        for b in beta:
+            ons_korr[counter] = ons_energy[counter]/b
+            counter += 1
+        plt.plot(beta, ons_korr, 'r+', markersize=10, label=r'$U_{Onsager}$')
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
-        plt.plot(beta, yang_mag, 'r+', markersize=10, label='Yang Magnetisierung')
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}|$')
     if name == 'specific_heat':
         plt.ylabel(r'$c_V$', fontsize=24)
     if name == 'chi':
@@ -128,8 +134,8 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
-    plt.legend(loc='best', framealpha=0.5, title = '256x256, H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + 'TestOnsEner_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()            
@@ -153,10 +159,10 @@ def make_nice_plot_Ons_double(beta, y_data1, y_err1, y_data2, y_err2, name, lege
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
         plt.ylabel(r'U', fontsize=24)
-        plt.plot(beta, ons_energy, 'r+', markersize=10, label='Onsager Energie')
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
-        plt.plot(beta, yang_mag, 'r+', markersize=10, label='Yang Magnetisierung')
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}|$')
     if name == 'specific_heat':
         plt.ylabel(r'$c_V$', fontsize=24)
         print(y_err1)
@@ -192,11 +198,11 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
         plt.ylabel(r'U', fontsize=24)
-        plt.plot(beta, ons_energy, 'r+', markersize=10, label='Onsager Energie')
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
         plt.ylim([-0.9, -0.35])
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
-        plt.plot(beta, yang_mag, 'r+', markersize=10, label='Yang Magnetisierung')
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}$|')
         plt.ylim([-0.1, 1])
     if name == 'specific_heat':
         plt.ylabel(r'$c_V$', fontsize=24)
@@ -208,8 +214,54 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
-    plt.legend(loc='best', framealpha=0.5, title = '256x256 Gitter, \n H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/FinalTestVariance/' + 'Ausreißer_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/FinalTestVariance/Neu_210104/' + 'Ausreißer_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+               + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
+    plt.savefig(plotname, bbox_inches='tight')
+    plt.close()    
+    
+def make_nice_plot_Ons_six(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_err3, y_data4, y_err4, y_data5, y_err5, y_data6, y_err6, name, legend1, legend2, lat, b_field, ons_energy, yang_mag):
+    """
+
+    :param beta: all values for beta
+    :param y_data: observable values
+    :param y_err: the error for the observable values
+    :param name: of the observable (e.g. energy)
+    :param legend: for the plot
+    :param lat: lattice size
+    :param b_field: value of magnetic field
+    """
+    plt.rcParams['figure.figsize'] = 16, 9
+    plt.errorbar(x=beta, y=y_data1, yerr=y_err1, fmt='o', color='royalblue', label=legend1)
+    plt.errorbar(x=beta, y=y_data2, yerr=y_err2, fmt='o', color='royalblue')
+    plt.errorbar(x=beta, y=y_data3, yerr=y_err3, fmt='o', color='royalblue')
+    plt.errorbar(x=beta, y=y_data4, yerr=y_err4, fmt='o', color='hotpink', label=legend2)
+    plt.errorbar(x=beta, y=y_data5, yerr=y_err5, fmt='o', color='hotpink')
+    plt.errorbar(x=beta, y=y_data6, yerr=y_err6, fmt='o', color='hotpink')
+   # plt.fill_between([0.43, 0.45], -5, 300,  color='papayawhip')
+    plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            # plt.xlim([beta[0], beta[-1]])
+    plt.xlabel(r'$\beta$', fontsize=24)
+    if name == 'energy':
+        plt.ylabel(r'U', fontsize=24)
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
+        plt.ylim([-0.7, -0.54])
+    if name == 'magnetisation':
+        plt.ylabel(r'|M|', fontsize=24)
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}$|')
+        plt.ylim([-0.1, 0.8])
+    if name == 'specific_heat':
+        plt.ylabel(r'$c_V$', fontsize=24)
+        plt.ylim([-1.2, 5.5])
+    if name == 'chi':
+        plt.ylabel(r'$\chi$', fontsize=24)
+        plt.ylim([-1, 250])
+    #plt.ylim([min(y_data1)+max(y_err1), max(y_data1)+max(y_err1)])
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/FinalTestSkips/' + 'SkipTest_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()    
@@ -217,7 +269,7 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
     
 
 
-def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
+def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, ons_energy, yang_mag, OnlyBig):
     """Plots more than one data set of the observable. Give the function a list
     of data_lists.
 
@@ -261,14 +313,22 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
         plt.savefig(plotname, bbox_inches='tight')
         plt.close()
     if OnlyBig == True:
+        counter1 = 0
+        counter2 = 0
         for y, yerr, leg in zip(y_data, y_err, legend):
             plt.rcParams['figure.figsize'] =16, 9
             plt.errorbar(x=beta, y=y, yerr=yerr, color=colors[counter], fmt=forms[counter], label=leg)
             plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             plt.xlabel(r'$\beta$', fontsize=24)
             if name == 'energy':
+                if counter1 == 0:
+                    plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
+                    counter1 += 1
                 plt.ylabel(r'U', fontsize=24)
             if name == 'magnetisation':
+                if counter2 == 0:
+                    plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}$|')
+                    counter2 += 1
                 plt.ylabel(r'|M|', fontsize=24)
             if name == 'specific_heat':
                 plt.ylabel(r'$c_V$', fontsize=24)
@@ -284,7 +344,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, OnlyBig):
             print(leg)
         plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
         plt.tight_layout()
-        plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/Special/' + 'NurGross_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
+        plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/Special/' + 'NurGrossOns_' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
         plt.savefig(plotname, bbox_inches='tight')
         plt.close()
 
@@ -347,6 +407,8 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                 for lat in lattice[6:9]:
                     obs = []
                     obs_var = []
+                    ons_energy = []
+                    yang_mag = []
                     print(r'Lattice size' + str(lat))
                     for b in beta:
                         print(r'$\beta$ = ' + str(b))
@@ -355,6 +417,8 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                         data = np.load(filename)
                         obs.append(data[obs_name])
                         obs_var.append(data[obs_var_name])
+                        ons_energy.append(data['Onsager_Energy'])
+                        yang_mag.append(data['Yang_Magnetisation'])
                         conf_number = str(data['infos'][0]).replace('#', '')
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
                     #           + 'B_ext = ' + str(b_field)
@@ -366,7 +430,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     obs_legend.append(leg_part)
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
-                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
+                #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, ons_energy, yang_mag, OnlyBig)
                 
 
 def lattice_plotting_double(direc1, direc2, beta_list, lattice_list, external_field_list, observables):
@@ -525,6 +589,89 @@ def lattice_plotting_three(direc1, direc2, direc3, beta_list, lattice_list, exte
                 #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
             
 
+def lattice_plotting_six(direc1, direc2, direc3, direc4, direc5, direc6, beta_list, lattice_list, external_field_list, observables):
+    """This function goes through the different lattice and
+    external magnetic field values and calls different plot functions for you.
+    There is a special (consistent) naming for the save files.
+
+    :param dir: directory in which the plots should be saved in
+    :param beta_list: all values for beta
+    :param lattice_list: all lattice sizes
+    :param external_field_list: all external magnetic field values
+    :param observables: all :observables which should be plotted
+    """
+    beta = beta_list
+    lattice = lattice_list
+    external_b_field = external_field_list
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    filepart4 = direc4
+    filepart5 = direc5
+    filepart6 = direc6
+    for obs_name, obs_var_name in observables:
+        for b_field in external_b_field:
+            for lat in lattice:
+                obs1 = []
+                obs_var1 = []
+                obs2 = []
+                obs_var2 = []
+                obs3 = []
+                obs_var3 = []
+                obs4 = []
+                obs_var4 = []
+                obs5 = []
+                obs_var5 = []
+                obs6 = []
+                obs_var6 = []
+                ons_energy = []
+                yang_mag = []
+                for b in beta:
+                    filename1 = filepart1  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    filename2 = filepart2  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    filename3 = filepart3 + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    filename4 = filepart4  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    filename5 = filepart5  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    filename6 = filepart6 + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    data1 = np.load(filename1)
+                    data2 = np.load(filename2)
+                    data3 = np.load(filename3)
+                    data4 = np.load(filename4)
+                    data5 = np.load(filename5)
+                    data6 = np.load(filename6)
+                    obs1.append(data1[obs_name])
+                    obs_var1.append(data1[obs_var_name])
+                    obs2.append(data2[obs_name])
+                    obs_var2.append(data2[obs_var_name])
+                    obs3.append(data3[obs_name])
+                    obs_var3.append(data3[obs_var_name])
+                    obs4.append(data4[obs_name])
+                    obs_var4.append(data4[obs_var_name])
+                    obs5.append(data5[obs_name])
+                    obs_var5.append(data5[obs_var_name])
+                    obs6.append(data6[obs_name])
+                    obs_var6.append(data6[obs_var_name])
+                    #the same theoretical results for the data 
+                    ons_energy.append(data1['Onsager_Energy'])
+                    yang_mag.append(data1['Yang_Magnetisation'])
+                    # Maybe different configuration numbers
+                    conf_number1 = str(data1['infos'][0]).replace('#', '')
+                    conf_number2 = str(data4['infos'][0]).replace('#', '')
+                leg_part1 = ' ' 
+                legend1 = conf_number1 #+ '\n' + leg_part1
+                leg_part2 = ' ' 
+                legend2 = conf_number2 #+ '\n' + leg_part2
+                make_nice_plot_Ons_six(beta, obs1, obs_var1, obs2, obs_var2, obs3, obs_var3, obs4, obs_var4, obs5, obs_var5, obs6, obs_var6, obs_name, legend1, legend2, lat, b_field, ons_energy, yang_mag)             
+    
+
+
+
 def bfield_plotting(direc, beta_list, lattice_list, external_field_list, observables, OnlyBig):
     """This function goes through the different lattice and
     external magnetic field values and calls different plot functions for you.
@@ -566,7 +713,8 @@ def bfield_plotting(direc, beta_list, lattice_list, external_field_list, observa
                 obs_var_arr.append(obs_var)
             #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig) 
 
-def plot_phasediagram():
+
+def plot_phasediagram_magn():
     beta_list = np.arange(0.39, 0.49, 0.0001)
     beta_crit = np.log(1 + np.sqrt(2)) / 2
     yang_magnetisation = np.ones(len(beta_list))
@@ -582,7 +730,7 @@ def plot_phasediagram():
     plt.rcParams['figure.figsize'] =16, 9
     plt.axhline(y=0, xmin=-200 , xmax=200, color='black', ls='-')
     plt.axvline(x=beta_crit, ymin=-200 , ymax=200, color='black', ls='--')
-    plt.plot(beta_list, yang_magnetisation, '-r', label='Yang Magnetisierung')
+    plt.plot(beta_list, yang_magnetisation, '-r', label=r'$|M_{Yang}|$')
     plt.plot(beta_list, -yang_magnetisation, '-r')
     plt.annotate('Phasenübergang \n 1. Ordnung', xytext=(0.4625, -0.2), xy=(0.46, -0.5), fontsize=20)
     plt.annotate(r'', xytext=(0.46, 0.5), xy=(0.46, -0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
@@ -596,9 +744,194 @@ def plot_phasediagram():
     plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
     plotname = 'Analyse/' + 'PhasendiagrammMagnetisierung.pdf'
     plt.savefig(plotname, bbox_inches='tight')
-    plt.close()            
+    plt.close()    
     
+def write_ons_ener():
+    beta_list = np.arange(0.39, 0.49, 0.001)
+    ons_ener = np.ones(len(beta_list))
+    counter = 0
+    for beta in beta_list:
+        k = 2 * np.tanh(2 * beta ) ** 2 - 1
+        l = (2 * np.sinh(2 * beta )) \
+            / (np.cosh(2 * beta ) ** 2 )
+        integral = elli(l)
+        ons_ener[counter] = (-(1)
+                          / (np.tanh(2 * beta))) *\
+                        (1 + 2 / np.pi * k * integral)
+        counter += 1
+    np.savetxt('OnsEnerWerte_ML.txt', (beta_list, ons_ener), header = 'beta ' + 'Onsager Energy')
+    '''
+    print(len(ons_ener))
+    print(len(beta_list))
+    plt.plot(beta_list, ons_ener)
+    plt.savefig('Test.pdf')
+    plt.close()
+    '''
     
+def plot_phasediagram_ener():
+    beta_list = np.arange(0.1, 0.9, 0.0001)
+    beta_crit = np.log(1 + np.sqrt(2)) / 2
+    ons_ener = np.ones(len(beta_list))
+    counter = 0
+    for beta in beta_list:
+        k = 2 * np.tanh(2 * beta ) ** 2 - 1
+        l = (2 * np.sinh(2 * beta )) \
+            / (np.cosh(2 * beta ) ** 2 )
+        integral = elli(l)
+        ons_ener[counter] = (-(1)
+                          / (np.tanh(2 * beta))) *\
+                        (1 + 2 / np.pi * k * integral)
+        counter += 1
+    wiki_ons_ener = np.ones(len(beta_list))
+    counter = 0
+    for beta in beta_list:
+        r = 1 / ((np.sinh(2 * beta)) ** 2)  # faktor um rechnung zu vereinfachen
+        s = 4*r*(1+r)**(-2)
+        inte = elli(s)
+        wiki_ons_ener[counter] = (-beta) / (np.tanh(2 * beta)) * (1 + 2 / np.pi * (2 * np.tanh(2 * beta) ** 2 - 1) * inte)
+    plt.rcParams['figure.figsize'] =16, 9
+    #plt.axhline(y=0, xmin=-200 , xmax=200, color='black', ls='-')
+    plt.axvline(x=beta_crit, ymin=-200 , ymax=200, color='black', ls='--')
+    plt.plot(beta_list, ons_ener, '-r', label=r'$U_{Huang, Onsager}$')
+    #plt.plot(beta_list, wiki_ons_ener, '-b', label=r'$U_{Wiki, Onsager}$')
+    #plt.annotate('Phasenübergang \n 1. Ordnung', xytext=(0.4625, -0.2), xy=(0.46, -0.5), fontsize=20)
+    #plt.annotate(r'', xytext=(0.46, 0.5), xy=(0.46, -0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
+    #plt.annotate('Phasenübergang \n 2. Ordnung', xytext=(0.42, 0.3), xy=(0.46, -0.5), fontsize=20)
+    #plt.annotate(r'', xytext=(0.43, 0.5), xy=(0.45, 0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
+    #plt.xlim([0.1,0.6])
+    #plt.ylim([-1, 0])
+    plt.xlabel(r'$\beta$', fontsize = 24)
+    plt.ylabel(r'$U_{Onsager}$', fontsize = 24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/' + 'PhasendiagrammEnergiePlusMarc.pdf'
+    plt.savefig(plotname, bbox_inches='tight')
+    plt.close()    
+
+
+def VarianceFlucMagn(direc1, direc2, direc3, name, beta_list, lattice_list, external_field_list):
+    """This function goes through the different lattice and
+    external magnetic field values and calls different plot functions for you.
+    There is a special (consistent) naming for the save files.
+
+    :param dir: directory in which the plots should be saved in
+    :param beta_list: all values for beta
+    :param lattice_list: all lattice sizes
+    :param external_field_list: all external magnetic field values
+    :param observables: all :observables which should be plotted
+    """
+    beta = beta_list
+    lattice = lattice_list
+    external_b_field = external_field_list
+    filepart1 = direc1
+    filepart2 = direc2
+    filepart3 = direc3
+    for b_field in external_b_field:
+        for lat in lattice:
+            obs1 = []
+            obs2 = []
+            obs3 = []
+            for b in beta:
+                filename1 = filepart1  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                filename2 = filepart2  + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                filename3 = filepart3 + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                    + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                data1 = np.load(filename1)
+                data2 = np.load(filename2)
+                data3 = np.load(filename3)
+                obs1.append(data1[name])
+                obs2.append(data2[name])
+                obs3.append(data3[name])
+            # Calculaion of the variance of the data
+            magn_var_est = []
+            for i in np.arange(0, len(obs1), 1):
+                #print(np.mean([obs1[i]**2, obs2[i]**2, obs3[i]**2])-(np.mean([obs1[i], obs2[i], obs3[i]]))**2)
+                magn_var_est.append(np.mean([obs1[i]**2, obs2[i]**2, obs3[i]**2])-(np.mean([obs1[i], obs2[i], obs3[i]]))**2)
+                #print(magn_var_est)
+            return magn_var_est
+            
+            
+def lattice_plotting_KorrMagnVar(direc, direc1, direc2, direc3, beta_list, lattice_list, external_field_list, observables):
+    """This function goes through the different lattice and
+    external magnetic field values and calls different plot functions for you.
+    There is a special (consistent) naming for the save files.
+
+    :param dir: directory in which the plots should be saved in
+    :param beta_list: all values for beta
+    :param lattice_list: all lattice sizes
+    :param external_field_list: all external magnetic field values
+    :param observables: all :observables which should be plotted
+    """
+    beta = beta_list
+    lattice = lattice_list
+    external_b_field = external_field_list
+    filepart = direc
+    for obs_name, obs_var_name in observables:
+        for b_field in external_b_field:
+            obs_legend = []
+            for lat in lattice:
+                obs = []
+                obs_var = []
+                ons_energy = []
+                yang_mag = []
+                #MagnKorrVar = []
+                for b in beta:
+                    filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+                        + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    data = np.load(filename)
+                    obs.append(data[obs_name])
+                    obs_var.append(data[obs_var_name])
+                    ons_energy.append(data['Onsager_Energy'])
+                    yang_mag.append(data['Yang_Magnetisation'])
+                    conf_number = str(data['infos'][0]).replace('#', '')
+                leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
+                             + 'B_ext = ' + str(b_field)
+                conf_number = str(data['infos'][0]).replace('#', '')
+                legend = 'Datenpunkte \n' + conf_number 
+                obs_legend.append(leg_part)
+                MagnKorrVar = []
+                if obs_name == 'magnetisation':
+                    MagnKorrVar = np.sqrt(VarianceFlucMagn(direc1, direc2, direc3, obs_name, beta[12:40], lattice, external_b_field))
+                make_nice_plot_Ons_Korr(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag, MagnKorrVar=MagnKorrVar)             
+                
+def make_nice_plot_Ons_Korr(beta, y_data, y_err, name, legend, lat, b_field, ons_energy, yang_mag, MagnKorrVar):
+    """
+
+    :param beta: all values for beta
+    :param y_data: observable values
+    :param y_err: the error for the observable values
+    :param name: of the observable (e.g. energy)
+    :param legend: for the plot
+    :param lat: lattice size
+    :param b_field: value of magnetic field
+    """
+    plt.rcParams['figure.figsize'] = 16, 9
+    plt.errorbar(x=beta, y=y_data, yerr=y_err, color='royalblue', fmt='o', label=legend, zorder=1)
+    plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
+            # plt.xlim([beta[0], beta[-1]])
+    plt.xlabel(r'$\beta$', fontsize=24)
+    if name == 'energy':
+        plt.ylabel(r'U', fontsize=24)
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
+    if name == 'magnetisation':
+        plt.ylabel(r'|M|', fontsize=24)
+        plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}|$')
+        plt.errorbar(x=beta[12:40], y=y_data[12:40], yerr=MagnKorrVar, color='royalblue', ecolor='orange', fmt='o', zorder=2)
+    if name == 'specific_heat':
+        plt.ylabel(r'$c_V$', fontsize=24)
+    if name == 'chi':
+        plt.ylabel(r'$\chi$', fontsize=24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
+    plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + 'KorrMagn_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+               + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
+    plt.savefig(plotname, bbox_inches='tight')
+    plt.close()     
     
 
 
@@ -607,7 +940,7 @@ beta_all_for_all_lattices = [0.39, 0.40, 0.41, 0.415, 0.42, 0.425, 0.43, 0.4325,
 beta_all_setted = [0.39, 0.395, 0.4, 0.405, 0.41, 0.4125, 0.415, 0.4175, 0.42, 0.4225, 0.425, 0.4275, 0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.43894, 0.43896, 0.43898, 0.44, 0.4402, 0.4404, 0.4406, 0.4408, 0.441, 0.4412, 0.44125, 0.4414, 0.4416, 0.4418, 0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45, 0.4525, 0.455, 0.4575, 0.46, 0.4625, 0.465, 0.4675, 0.47, 0.475, 0.48, 0.485, 0.49]
 beta_min = [0.39, 0.42, 0.44, 0.441, 0.46, 0.49]
 beta_test = [0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.44, 0.44125,  0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45]
-beta_fine = [0.43894, 0.43896, 0.43898]
+beta_fine = [0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.43894, 0.43896, 0.43898, 0.44, 0.4402, 0.4404, 0.4406, 0.4408, 0.441, 0.4412, 0.44125, 0.4414, 0.4416, 0.4418, 0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45]
 lattice = [(2 ** i, 2 ** i) for i in range(1, 10)]
 setted_lattice = [(256, 256)]
 b_field_all = [-1, -0.875, -0.75, -0.625, -0.5, -0.375, -0.25, -0.125, 0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
@@ -633,13 +966,41 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 #                                  external_field_list=[0], observables=observables, OnlyBig = True)
 #lattice_plotting_double(direc1='Analyse/256x256/FinalTestSkips/100Konfigs/', direc2='Analyse/256x256/FinalTestSkips/200Konfigs/', beta_list=beta_test, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables)
-lattice_plotting_three(direc1='Analyse/256x256/FinalTestVariance/Run1/', direc2='Analyse/256x256/FinalTestVariance/Run2/', direc3='Analyse/256x256/FinalTestVariance/Run3/', beta_list=beta_test, lattice_list=setted_lattice,
-                 external_field_list=[0], observables=observables)
+#lattice_plotting_three(direc1='Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', direc2='Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', direc3='Analyse/256x256/FinalTestVariance/Neu_210104/Run3/', beta_list=beta_test, lattice_list=setted_lattice,
+#                 external_field_list=[0], observables=observables)
 #bfield_plotting(direc='Analyse/256x256/OhneBFeld/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables, OnlyBig = False)
 
 #lattice_measuring(beta_list=[0.39], lattice_list=setted_lattice, external_field_list = [0])
-#plot_phasediagram()
+#plot_phasediagram_magn()
+#plot_phasediagram_ener()
+
+'''
+write_ons_ener()
+data = np.genfromtxt('OnsEnerWerte_ML.txt', skip_header = 1).T
+print(data)
+'''
+
+#lattice_plotting_KorrMagnVar('Analyse/256x256/Observablen/Neu_201229/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', \
+#                             'Analyse/256x256/FinalTestVariance/Neu_210104/Run3/', beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list=[0], observables=observables)
+
+#lattice_plotting_six(direc1='Analyse/256x256/FinalTestSkips/Run1_100Konfigs/', \
+#                     direc2='Analyse/256x256/FinalTestSkips/Run2_100Konfigs/', \
+#                     direc3='Analyse/256x256/FinalTestSkips/Run3_100Konfigs/', \
+#                     direc4='Analyse/256x256/FinalTestSkips/Run1_200Konfigs/', \
+#                     direc5='Analyse/256x256/FinalTestSkips/Run2_200Konfigs/', \
+#                     direc6='Analyse/256x256/FinalTestSkips/Run3_200Konfigs/', \
+#                     beta_list=beta_test, lattice_list=setted_lattice, \
+#                 external_field_list=[0], observables=observables)
+
+
+'''
+for i in np.arange(0, len(beta_all_setted), 1):
+    if beta_all_setted[i] == 0.43:
+        print(i)
+    if beta_all_setted[i] == 0.45:
+        print(i)
+'''
 
 
  

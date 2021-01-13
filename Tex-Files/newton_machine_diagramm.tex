@@ -1,0 +1,282 @@
+
+%\documentclass[10pt,a4paper]{article}
+\documentclass[tikz]{standalone}
+%\usepackage[utf8]{inputenc}
+
+% TikZ und Bibliotheken
+%\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{intersections}
+\usetikzlibrary{calc}
+
+
+\begin{document}
+
+
+\tikzset{
+io/.style={
+trapezium,
+trapezium left angle=70,
+trapezium right angle=110,
+fill=magenta!20,
+ draw=magenta},
+ op/.style={
+rectangle,
+fill=cyan!10,
+ draw=cyan},
+ co/.style={
+diamond,
+aspect=2,
+inner sep=2pt,
+fill=red!20,
+ draw=red},
+ node distance = 5mm}
+
+%\subsection*{Newton Maschine}
+
+
+
+\begin{tikzpicture}[thick, scale=2]
+
+\node[io] (Fin) {Gegebene Kraft F = F(v)};
+\node[io, left=of Fin] (vin) {Startwert $v_0$};
+\node[io, left=of vin] (sin) {Startwert $s_0$};
+\node[op, below=of Fin] (acc) {$a=\frac{F}{m}$};
+
+
+%\node[op, below=of acc, align=left] (v) {$a=\frac{\Delta v}{\Delta t}=\frac{v_1 -v_0}{\Delta t}$};
+%\node[op, yshift=0.5cm,below=of v, align=left] (vt) {$v_1 = a\cdot \Delta t + v_0$};
+\node[op, below=of acc] (v) {
+
+\begin{tikzpicture}
+
+\node[op] (dv) {$a=\frac{\Delta v}{\Delta t}=\frac{v_1 -v_0}{\Delta t}$};
+\node[op, below=of dv, yshift=0.4cm]  (vt) {$v_1 = a\cdot \Delta t + v_0$};
+\end{tikzpicture}
+};
+\node[op, below=of v] (s) {
+\begin{tikzpicture}
+\node[op] (ds) {$v=\frac{\Delta s}{\Delta t}=\frac{s_1-s_0}{\Delta t}$};
+\node[op, below=of ds, yshift=0.4cm] (st) {$s_1 = v\cdot \Delta t + s_0 $};
+\end{tikzpicture}
+};
+\node[below=of s] (space) {};
+\node[op, fill=green!10, draw=green!50!black, below=of space, align=center] (end) {$\texttt{Neues Wertepaar}$  \\ $ (t_1, s_1)$};
+
+
+\path[->]
+(Fin) edge (acc)
+%(acc) edge (v) node[io, right] {$a_0$} 
+%(v) edge (vt)
+%(v) edge (s) 
+%(s) edge (end)
+%(Fin) edge (acc)
+;
+
+%\draw[->, label={[draw, right] $a_0$}] (acc) -- (v);
+\draw[->] (acc) -- (v) node[midway, right]  {$a_0$} ;
+\draw[->] (v) -- (s) node[midway, right]  {$v_1$} ;
+\draw[->] (s) -- (end) node[midway, right]  {$s_1$} ;
+\draw[->] (vin) |- (acc);
+%\draw[->] (vin) |- ++(0.5,0)-- (vt);
+\draw[->] (sin) |- (s);
+\draw[->] (v.south east) -- ++(0.3,0) node[io] at ++(0., 0.6) {$v_1$} |- (acc);
+%\draw[->] (s) ++(0.73,-0.2) -- ++(0.3,0) -- ++(0, 0.2) node[io] at ++(0.2 ,-0.1) {$s$} -- ++(-0.3,0);
+\draw[->] (s.south east) -- ++(0.3,0) node[io] at ++(0. ,0.2) {$s_1$}|- (s.east);
+
+\node[op, fill=green!10, draw=green!50!black] (legthree) at (-3.8,-3.5) {};
+\node[right=of legthree] {Ergebnis}; 
+\node[op, above=of legthree, yshift=-0.35cm] (legtwo) {};
+\node[right=of legtwo] {Rechnungen};
+\node[io, rectangle, above=of legtwo, yshift=-0.35cm] (legone) {};
+\node[right=of legone, align=left] {Eingabewerte}; 
+\node[rectangle, dotted, draw=gray, fill=gray!20, below=of legthree, yshift=0.35cm] (legfour) {};
+\node[right=of legfour] {Computer};
+\draw[thin, gray!40!black] ($(legfour.south west) + (-0.05, -0.05)$) rectangle ($(legone.north east)+(1.4, 0.1)$);
+
+\begin{scope}[on background layer]
+\draw[very thick, dotted, gray!40!black, fill=gray!30] ($(s.south west) + (-0.25, -0.15)$) rectangle ($(acc.north east)+(1, 0.1)$);
+ \end{scope}
+
+%\draw (s) rectangle ++(1, 1);
+\end{tikzpicture}
+
+
+\begin{tikzpicture}[thick, scale=2]
+\node[io] (Fin) {Gegebene Kraft F = F(v)};
+\node[io, left=of Fin] (vin) {Startwert $v_0$};
+\node[io, left=of vin] (sin) {Startwert $s_0$};
+\node[op, below=of Fin] (acc) {$a=\frac{F}{m}$};
+
+%\node[op, below=of acc, align=left] (v) {$a=\frac{\Delta v}{\Delta t}=\frac{v_1 -v_0}{\Delta t}$};
+%\node[op, yshift=0.5cm,below=of v, align=left] (vt) {$v_1 = a\cdot \Delta t + v_0$};
+\node[op, below=of acc] (v) {
+
+\begin{tikzpicture}
+
+\node[op] (dv) {$a=\frac{\Delta v}{\Delta t}=\frac{v_{k+1} -v_{k}}{\Delta t}$};
+\node[op, below=of dv, yshift=0.4cm]  (vt) {$v_{k+1} = a_{k}\cdot \Delta t + v_k$};
+\end{tikzpicture}
+};
+\node[op, below=of v] (s) {
+\begin{tikzpicture}
+\node[op] (ds) {$v=\frac{\Delta s}{\Delta t}=\frac{s_{k+1}-s_{k}}{\Delta t}$};
+\node[op, below=of ds, yshift=0.4cm] (st) {$s_{k+1} = v_{k+1}\cdot \Delta t + s_k $};
+\end{tikzpicture}
+};
+\node[below=of s] (space) {};
+\node[op, fill=green!10, draw=green!50!black, below=of space, align=center] (end) {$\texttt{Neues Wertepaar}$ \\ $(t_{k+1}, s_{k+1})$};
+
+\path[->]
+(Fin) edge (acc)
+%(acc) edge (v)
+%(v) edge (vt)
+%(v) edge (s)
+%(s) edge (end)
+%(Fin) edge (acc)
+;
+
+\draw[->] (acc) -- (v) node[midway, right]  {$a_k$} ;
+\draw[->] (v) -- (s) node[midway, right]  {$v_{k+1}$} ;
+\draw[->] (s) -- (end) node[midway, right]  {$s_{k+1}$} ;
+\draw[->] (vin) |- (acc);
+%\draw[->] (vin) |- ++(0.5,0)-- (vt);
+\draw[->] (sin) |- (s);
+\draw[->] (v.south east) -- ++(0.65,0) node[io] at ++(0., 0.6) {$v_k=v_{k+1}$} |- (acc);
+%\draw[->] (s) ++(0.73,-0.2) -- ++(0.3,0) -- ++(0, 0.2) node[io] at ++(0.2 ,-0.1) {$s$} -- ++(-0.3,0);
+\draw[->] (s.south east) -- ++(0.65,0) node[io] at ++(0. ,0.2) {$s_{k}=s_{k+1}$}|- (s.east);
+
+\node[op, fill=green!10, draw=green!50!black] (legthree) at (-3.8,-3.5) {};
+\node[right=of legthree] {Ergebnis}; 
+\node[op, above=of legthree, yshift=-0.35cm] (legtwo) {};
+\node[right=of legtwo] {Rechnungen};
+\node[io, rectangle, above=of legtwo, yshift=-0.35cm] (legone) {};
+\node[right=of legone, align=left] {Eingabewerte}; 
+\node[rectangle, dotted, draw=gray, fill=gray!20, below=of legthree, yshift=0.35cm] (legfour) {};
+\node[right=of legfour] {Computer};
+\draw[thin, gray!40!black] ($(legfour.south west) + (-0.05, -0.05)$) rectangle ($(legone.north east)+(1.4, 0.1)$);
+
+\begin{scope}[on background layer]
+\draw[ultra thick, dotted, gray!40!black, fill=gray!30] ($(s.south west) +(-0.25, -0.15)$) rectangle ($(acc.north east)+(1.85, 0.1)$);
+ \end{scope}
+%\draw (s) rectangle ++(1, 1);
+\end{tikzpicture}
+
+
+
+
+\begin{tikzpicture}[thick, scale=2]
+\node[io] (Fin) {Gegebene Kraft F = F(v)};
+\node[io, left=of Fin] (vin) {Startwert $v_0$};
+\node[io, left=of vin] (sin) {Startwert $s_0$};
+\node[op, below=of Fin] (acc) {$a=\frac{F}{m}$};
+
+
+\node[op, below=of acc] (v) {
+
+\begin{tikzpicture}
+
+\node[op] (dv) {$a=\frac{\Delta v}{\Delta t}=\frac{v_{neu} -v_{alt}}{\Delta t}$};
+\node[op, below=of dv, yshift=0.4cm]  (vt) {$v_{neu} = a\cdot \Delta t + v_{alt}$};
+\end{tikzpicture}
+};
+\node[op, below=of v] (s) {
+\begin{tikzpicture}
+\node[op] (ds) {$v=\frac{\Delta s}{\Delta t}=\frac{s_{neu}-s_{alt}}{\Delta t}$};
+\node[op, below=of ds, yshift=0.4cm] (st) {$s_{neu} = v_{neu}\cdot \Delta t + s_{alt} $};
+\end{tikzpicture}
+};
+\node[below=of s] (space) {};
+\node[op, fill=green!10, draw=green!50!black, below=of space, align=center] (end) {$\texttt{Neues Wertepaar}$\\$(t_{neu}, s_{neu})$};
+
+\path[->]
+(Fin) edge (acc)
+;
+
+\draw[->] (acc) -- (v) node[midway, right]  {$a$} ;
+\draw[->] (v) -- (s) node[midway, right]  {$v_{neu}$} ;
+\draw[->] (s) -- (end) node[midway, right]  {$s_{neu}$} ;
+\draw[->] (vin) |- (acc);
+\draw[->] (sin) |- (s);
+\draw[->] (v.south east) -- ++(0.65,0) node[io] at ++(0., 0.6) {$v_{alt}=v_{neu}$} |- (acc);
+\draw[->] (s.south east) -- ++(0.65,0) node[io] at ++(0. ,0.2) {$s_{alt}=s_{neu}$}|- (s.east);
+
+
+\node[op, fill=green!10, draw=green!50!black] (legthree) at (-3.8,-3.5) {};
+\node[right=of legthree] {Ergebnis}; 
+\node[op, above=of legthree, yshift=-0.35cm] (legtwo) {};
+\node[right=of legtwo] {Rechnungen};
+\node[io, rectangle, above=of legtwo, yshift=-0.35cm] (legone) {};
+\node[right=of legone, align=left] {Eingabewerte}; 
+\node[rectangle, dotted, draw=gray, fill=gray!20, below=of legthree, yshift=0.35cm] (legfour) {};
+\node[right=of legfour] {Computer};
+\draw[thin, gray!40!black] ($(legfour.south west) + (-0.05, -0.05)$) rectangle ($(legone.north east)+(1.4, 0.1)$);
+
+\begin{scope}[on background layer]
+\draw[ultra thick, dotted, gray!40!black, fill=gray!30] ($(s.south west) + (-0.25, -0.15)$) rectangle ($(acc.north east)+(1.9, 0.1)$);
+ \end{scope}
+\end{tikzpicture}
+
+
+
+\begin{tikzpicture}[thick, scale=2]
+\node[io] (Fin) {Gegebene Kraft F = F(v)};
+\node[io, left=of Fin] (vin) {Startwert $v_0$};
+\node[io, left=of vin] (sin) {Startwert $s_0$};
+\node[op, below=of Fin] (acc) {$a=\frac{F}{m}$};
+\node[op, below=of acc] (v) {
+
+%\begin{tikzpicture}
+
+%\node[op] (dv) {$a=\frac{\Delta v}{\Delta t}=\frac{v_{neu} -v_{alt}}{\Delta t}$};
+%\node[op, below=of dv, yshift=0.4cm]  (vt) {
+$v_{neu} = a\cdot \Delta t + v_{alt}$};
+%\end{tikzpicture}
+%};
+\node[op, below=of v] (s) {
+%\begin{tikzpicture}
+%\node[op] (ds) {$v=\frac{\Delta s}{\Delta t}=\frac{s_{neu}-s_{alt}}{\Delta t}$};
+%\node[op, below=of ds, yshift=0.4cm] (st) {
+$s_{neu} = v_{neu}\cdot \Delta t + s_{alt} $
+%};
+%\end{tikzpicture}
+};
+\node[below=of s] (space) {};
+\node[op, fill=green!10, draw=green!50!black, below=of space, align=center]  (end) {$\texttt{Neues Wertepaar}$\\$(t_{neu}, s_{neu})$};
+
+\path[->]
+(Fin) edge (acc)
+;
+
+\draw[->] (acc) -- (v) node[midway, right]  {$a$} ;
+\draw[->] (v) -- (s) node[midway, right]  {$v_{neu}$} ;
+\draw[->] (s) -- (end) node[midway, right]  {$s_{neu}$} ;
+\draw[->] (vin) |- (acc);
+\draw[->] (sin) |- (s);
+\draw[->] (v.south east) -- ++(0.65,0) node[io] at ++(0., 0.4) {$v_{alt}=v_{neu}$} |- (acc);
+\draw[->] (s.south east) -- ++(0.65,0) node[io] at ++(0. ,0.1) {$s_{alt}=s_{neu}$}|- (s.east);
+
+
+\node[op, fill=green!10, draw=green!50!black] (legthree) at (-3.8,-2.5) {};
+\node[right=of legthree] {Ergebnis}; 
+\node[op, above=of legthree, yshift=-0.35cm] (legtwo) {};
+\node[right=of legtwo] {Rechnungen};
+\node[io, rectangle, above=of legtwo, yshift=-0.35cm] (legone) {};
+\node[right=of legone, align=left] {Eingabewerte}; 
+\node[rectangle, dotted, draw=gray, fill=gray!20, below=of legthree, yshift=0.35cm] (legfour) {};
+\node[right=of legfour] {Computer};
+\draw[thin, gray!40!black] ($(legfour.south west) + (-0.05, -0.05)$) rectangle ($(legone.north east)+(1.4, 0.1)$);
+%\node[above=of legone, yshift=-0.5cm, xshift=0.4cm, very thick] {Legende};
+
+
+\begin{scope}[on background layer]
+\draw[ultra thick, dotted, gray!40!black, fill=gray!30] ($(s.south west) + (-0.25, -0.15)$) rectangle ($(acc.north east)+(1.85, 0.1)$);
+ \end{scope}
+ 
+ 
+\end{tikzpicture}
+
+
+
+\end{document}

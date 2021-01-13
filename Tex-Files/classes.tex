@@ -1,0 +1,137 @@
+
+%\documentclass[10pt,a4paper]{article}
+\documentclass[tikz]{standalone}
+%\usepackage[utf8]{inputenc}
+
+% TikZ und Bibliotheken
+%\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{intersections}
+
+
+
+\begin{document}
+
+\tikzset{
+  grec/.style={
+  rectangle,
+  fill=green!10,
+  draw=green!50!black ,
+  rounded corners
+  },
+  brec/.style={
+  rectangle,
+  fill=blue!20,
+  draw=blue,
+  rounded corners
+  },
+  orec/.style={
+  rectangle,
+  fill=orange!20,
+  draw=orange ,
+  rounded corners 
+  },
+  mrec/.style={
+  rectangle,
+  fill=magenta!20,
+  draw=magenta,
+  rounded corners
+  },
+   crec/.style={
+  rectangle,
+  fill=cyan!10,
+  draw=cyan,
+  rounded corners
+  },
+  reclayer/.style args={#1}{
+   text = blue,
+   dotted,
+  rectangle,
+  fill=black!5,
+  draw=black ,
+  label = {[black] #1}
+  },
+  io/.style={
+trapezium,
+trapezium left angle=70,
+trapezium right angle=110,
+fill=magenta!20,
+ draw=magenta},
+  op/.style={
+rectangle,
+fill=orange!20,
+ draw=orange},
+ co/.style={
+diamond,
+aspect=2,
+inner sep=2pt,
+fill=red!20,
+ draw=red}
+}
+
+%\tikzset{
+%io/.style={
+%trapezium,
+%trapezium left angle=70,
+%trapezium right angle=110,
+%fill=magenta!20,
+% draw=magenta},
+% op/.style={
+%rectangle,
+%fill=orange!20,
+% draw=orange},
+% co/.style={
+%diamond,
+%aspect=2,
+%inner sep=2pt,
+%fill=red!20,
+% draw=red},
+% node distance = 5mm}
+
+%\subsection*{Newton Maschine}
+
+\begin{tikzpicture}[thick, scale=3]
+
+\node[reclayer = numba.jitclass, minimum width=2.2cm,minimum height=1.5cm]  (recone) {};
+
+\node[crec] (force) {Metropolis};
+% draw=yellow!80!black, fill=yellow!20
+\node[reclayer=class, xshift=2.5cm, minimum width=2.2cm,minimum height=1.5cm](rectwo) {};
+
+\node[crec, right=of force, xshift=-0.5cm] (mass) {Observables};
+
+\node[reclayer=class, xshift=5cm, minimum width=2.2cm,minimum height=1.5cm] (recthree) {};
+
+\node[crec, right=of mass, xshift=-0.4cm] (acc) {Ising\_Ani};
+
+%\path[->] (force) edge (mass)
+ %(mass) edge (acc);
+  
+   \path[->] ($(rectwo.south) + (-0.1, 0)$) edge ($(mass) + (-0.1, -0.085)$);
+ \path[-] (force) edge (recone.south) ;
+  \path[-] (recone.south) edge node[below]  {$\texttt{configs}$} ($(rectwo.south) + (-0.1, 0)$)  ;
+  
+   \path[->] (recthree.south) edge (acc);
+ \path[-]($(mass) + (+0.1, -0.085)$) edge ($(rectwo.south) + (+0.1, 0)$) ;
+  \path[-] ($(rectwo.south) + (+0.1, 0)$) edge node[below,  align=center] {$\texttt{observables,}$ \\ $\texttt{configs}$}  (recthree.south) ;
+  %{$\texttt{observables,}$ \\ $\texttt{configs}$}
+  %{$\texttt{Neues Wertepaar}$ \\ $(t_{k+1}, s_{k+1})$}; 
+\end{tikzpicture}
+
+
+
+%\newpage
+
+%\begin{tikzpicture}[thick, scale=2]
+%\node[io] (vin) {Startwert $v_0$};
+%\node[io] (sin) {Startwert $s_0$};
+
+
+%\end{tikzpicture}
+
+
+
+
+\end{document}
