@@ -84,7 +84,7 @@ def make_nice_plot(beta, y_data, y_err, name, legend, lat, b_field):
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
     if name == 'specific_heat':
@@ -117,7 +117,7 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
         ons_korr = np.ones(len(beta))
         counter = 0
         for b in beta:
@@ -158,7 +158,7 @@ def make_nice_plot_Ons_double(beta, y_data1, y_err1, y_data2, y_err2, name, lege
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
         plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
@@ -197,7 +197,7 @@ def make_nice_plot_Ons_three(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
         plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
         plt.ylim([-0.9, -0.35])
     if name == 'magnetisation':
@@ -243,7 +243,7 @@ def make_nice_plot_Ons_six(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_er
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
         plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
         plt.ylim([-0.7, -0.54])
     if name == 'magnetisation':
@@ -290,7 +290,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, ons_energy,
             plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             plt.xlabel(r'$\beta$', fontsize=24)
             if name == 'energy':
-                plt.ylabel(r'U', fontsize=24)
+                plt.ylabel(r'$\beta$U', fontsize=24)
             if name == 'magnetisation':
                 plt.ylabel(r'|M|', fontsize=24)
             if name == 'specific_heat':
@@ -324,7 +324,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, ons_energy,
                 if counter1 == 0:
                     plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
                     counter1 += 1
-                plt.ylabel(r'U', fontsize=24)
+                plt.ylabel(r'$\beta$U', fontsize=24)
             if name == 'magnetisation':
                 if counter2 == 0:
                     plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}$|')
@@ -801,7 +801,7 @@ def plot_phasediagram_ener():
     #plt.xlim([0.1,0.6])
     #plt.ylim([-1, 0])
     plt.xlabel(r'$\beta$', fontsize = 24)
-    plt.ylabel(r'$U_{Onsager}$', fontsize = 24)
+    plt.ylabel(r'$\beta$$U_{Onsager}$', fontsize = 24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
@@ -877,12 +877,25 @@ def lattice_plotting_KorrMagnVar(direc, direc1, direc2, direc3, beta_list, latti
                 obs_var = []
                 ons_energy = []
                 yang_mag = []
+                ener_var = []
+                config_energy_arr = []
                 #MagnKorrVar = []
                 for b in beta:
                     filename = filepart + str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                         + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+                    '''
+                    data_alt = np.load(filename)
+                    observables = Observables(data_alt['configs'], beta=b)
+                    observables.save_simulation(filename)
+                    '''
                     data = np.load(filename)
                     obs.append(data[obs_name])
+                    if obs_name == 'energy':
+                        #ener_var.append(data['specific_heat'])
+                        observables = Observables(data['configs'], b) 
+                        observables.total_energy()
+                        ener_var.append(np.std(observables.energy_per_config \
+                                                 / (lat[0]*lat[1])))
                     obs_var.append(data[obs_var_name])
                     ons_energy.append(data['Onsager_Energy'])
                     yang_mag.append(data['Yang_Magnetisation'])
@@ -895,6 +908,8 @@ def lattice_plotting_KorrMagnVar(direc, direc1, direc2, direc3, beta_list, latti
                 MagnKorrVar = []
                 if obs_name == 'magnetisation':
                     MagnKorrVar = np.sqrt(VarianceFlucMagn(direc1, direc2, direc3, obs_name, beta[12:40], lattice, external_b_field))
+                if obs_name == 'energy':
+                    obs_var = np.sqrt(np.array(ener_var))
                 make_nice_plot_Ons_Korr(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag, MagnKorrVar=MagnKorrVar)             
                 
 def make_nice_plot_Ons_Korr(beta, y_data, y_err, name, legend, lat, b_field, ons_energy, yang_mag, MagnKorrVar):
@@ -911,10 +926,11 @@ def make_nice_plot_Ons_Korr(beta, y_data, y_err, name, legend, lat, b_field, ons
     plt.rcParams['figure.figsize'] = 16, 9
     plt.errorbar(x=beta, y=y_data, yerr=y_err, color='royalblue', fmt='o', label=legend, zorder=1)
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
-            # plt.xlim([beta[0], beta[-1]])
+    # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
-        plt.ylabel(r'U', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
+        #plt.errorbar(x=beta, y=np.array(y_data)/np.array(beta), yerr=y_err, color='purple', fmt='o', label=r'$U_{neu}$', zorder=1)
         plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
@@ -928,7 +944,7 @@ def make_nice_plot_Ons_Korr(beta, y_data, y_err, name, legend, lat, b_field, ons
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + 'KorrMagn_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/Observablen/Test_Plots/' + 'Test_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()     
