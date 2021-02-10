@@ -27,6 +27,9 @@ class Metropolis:
         self.itersteps = 4500 * self.total_number_of_points
         self.first_skip = 500 * self.total_number_of_points
         self.skip = 20 * self.total_number_of_points
+        #self.itersteps = 2200 * self.total_number_of_points
+        #self.first_skip = 200 * self.total_number_of_points
+        #self.skip = 20 * self.total_number_of_points
         # J = inter
         self.inter = 1
         self.beta = beta

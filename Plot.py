@@ -112,18 +112,13 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     :param b_field: value of magnetic field
     """
     plt.rcParams['figure.figsize'] = 16, 9
-    plt.errorbar(x=beta, y=y_data, yerr=y_err, fmt='o', label=legend)
+    plt.errorbar(x=beta, y=y_data, yerr=y_err, color='purple', ecolor='royalblue', fmt='o', label=legend)
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             # plt.xlim([beta[0], beta[-1]])
     plt.xlabel(r'$\beta$', fontsize=24)
     if name == 'energy':
         plt.ylabel(r'$\beta$U', fontsize=24)
-        ons_korr = np.ones(len(beta))
-        counter = 0
-        for b in beta:
-            ons_korr[counter] = ons_energy[counter]/b
-            counter += 1
-        plt.plot(beta, ons_korr, 'r+', markersize=10, label=r'$U_{Onsager}$')
+        plt.plot(beta, ons_energy, 'r+', markersize=10, label=r'$U_{Onsager}$')
     if name == 'magnetisation':
         plt.ylabel(r'|M|', fontsize=24)
         plt.plot(beta, yang_mag, 'r+', markersize=10, label=r'$|M_{Yang}|$')
@@ -135,7 +130,7 @@ def make_nice_plot_Ons(beta, y_data, y_err, name, legend, lat, b_field, ons_ener
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + 'TestOnsEner_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/Observablen/Neu_201229/Plots/' + 'BootstrapErr_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()            
@@ -235,9 +230,9 @@ def make_nice_plot_Ons_six(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_er
     plt.errorbar(x=beta, y=y_data1, yerr=y_err1, fmt='o', color='royalblue', label=legend1)
     plt.errorbar(x=beta, y=y_data2, yerr=y_err2, fmt='o', color='royalblue')
     plt.errorbar(x=beta, y=y_data3, yerr=y_err3, fmt='o', color='royalblue')
-    plt.errorbar(x=beta, y=y_data4, yerr=y_err4, fmt='o', color='hotpink', label=legend2)
-    plt.errorbar(x=beta, y=y_data5, yerr=y_err5, fmt='o', color='hotpink')
-    plt.errorbar(x=beta, y=y_data6, yerr=y_err6, fmt='o', color='hotpink')
+    plt.errorbar(x=beta, y=y_data4, yerr=y_err4, fmt='o', color='purple', label=legend2)
+    plt.errorbar(x=beta, y=y_data5, yerr=y_err5, fmt='o', color='purple')
+    plt.errorbar(x=beta, y=y_data6, yerr=y_err6, fmt='o', color='purple')
    # plt.fill_between([0.43, 0.45], -5, 300,  color='papayawhip')
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             # plt.xlim([beta[0], beta[-1]])
@@ -261,7 +256,7 @@ def make_nice_plot_Ons_six(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_er
     plt.yticks(fontsize=20)
     #plt.legend(loc='best', framealpha=0.5, title = r'H = ' + str(b_field), title_fontsize = 24, fontsize=24)
     plt.legend(loc='best', framealpha=0.5, title = '(256x256), H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/256x256/FinalTestSkips/' + 'SkipTest_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
+    plotname = 'Analyse/256x256/FinalTestSkips/' + 'SkipTestBoot_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()    
@@ -309,7 +304,7 @@ def make_all_in_one_plot(beta, y_data, y_err, name, legend, b_field, ons_energy,
         plt.legend(loc='center left', bbox_to_anchor=(1.05, 0.5), title = 'H = 0', title_fontsize = 24, fontsize=24)
         plt.tight_layout()
         #plotname = 'Analyse/256x256/Beides/Plots/' + str(name) + '_plot_all_in_one_b_field_' + str(b_field) + '.pdf'
-        plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/' + str(name) + '_plot_all_in_one_lattice_256x256.pdf'
+        plotname = 'Analyse/Volumen/Deutsch/Neu_201208/Plots/' + str(name) + '_plot_all_in_one_lattice_Boot.pdf'
         plt.savefig(plotname, bbox_inches='tight')
         plt.close()
     if OnlyBig == True:
@@ -388,8 +383,7 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                         ons_energy.append(data['Onsager_Energy'])
                         yang_mag.append(data['Yang_Magnetisation'])
                         conf_number = str(data['infos'][0]).replace('#', '')
-                    leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' lattice' + '\n' \
-                               + 'B_ext = ' + str(b_field)
+                    leg_part = str(lat[0]) + 'x' + str(lat[1]) 
                     #legend = conf_number + '\n' + leg_part
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
                     #           + r'$B_{ext}$ = ' + str(b_field)
@@ -399,10 +393,10 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     legend = 'Datenpunkte \n' + conf_number 
                     obs_legend.append(leg_part)
                     #make_nice_plot(beta, obs, obs_var, obs_name, legend, lat, b_field)
-                    make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag)             
+                    #make_nice_plot_Ons(beta, obs, obs_var, obs_name, legend, lat, b_field, ons_energy, yang_mag)             
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
-                #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, OnlyBig)
+                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, ons_energy, yang_mag, OnlyBig)
             if OnlyBig == True:
                 for lat in lattice[6:9]:
                     obs = []
@@ -425,12 +419,11 @@ def lattice_plotting(direc, beta_list, lattice_list, external_field_list, observ
                     #legend = conf_number + '\n' + leg_part
                     #leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' + '\n' \
                     #           + r'$B_{ext}$ = ' + str(b_field)
-                    leg_part = str(lat[0]) + 'x' + str(lat[1]) + ' Gitter' 
-                    legend = conf_number + '\n' + leg_part
+                    leg_part = str(lat[0]) + 'x' + str(lat[1]) 
                     obs_legend.append(leg_part)
                     obs_arr.append(obs)
                     obs_var_arr.append(obs_var)
-                #make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, ons_energy, yang_mag, OnlyBig)
+                make_all_in_one_plot(beta, obs_arr, obs_var_arr, obs_name, obs_legend, b_field, ons_energy, yang_mag, OnlyBig)
                 
 
 def lattice_plotting_double(direc1, direc2, beta_list, lattice_list, external_field_list, observables):
@@ -730,7 +723,7 @@ def plot_phasediagram_magn():
     plt.rcParams['figure.figsize'] =16, 9
     plt.axhline(y=0, xmin=-200 , xmax=200, color='black', ls='-')
     plt.axvline(x=beta_crit, ymin=-200 , ymax=200, color='black', ls='--')
-    plt.plot(beta_list, yang_magnetisation, '-r', label=r'$|M_{Yang}|$')
+    plt.plot(beta_list, yang_magnetisation, '-r', label=r'$M_{Yang}$')
     plt.plot(beta_list, -yang_magnetisation, '-r')
     plt.annotate('Phasenübergang \n 1. Ordnung', xytext=(0.4625, -0.2), xy=(0.46, -0.5), fontsize=20)
     plt.annotate(r'', xytext=(0.46, 0.5), xy=(0.46, -0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
@@ -778,7 +771,7 @@ def plot_phasediagram_ener():
         l = (2 * np.sinh(2 * beta )) \
             / (np.cosh(2 * beta ) ** 2 )
         integral = elli(l)
-        ons_ener[counter] = (-(1)
+        ons_ener[counter] = (-(beta)
                           / (np.tanh(2 * beta))) *\
                         (1 + 2 / np.pi * k * integral)
         counter += 1
@@ -792,20 +785,20 @@ def plot_phasediagram_ener():
     plt.rcParams['figure.figsize'] =16, 9
     #plt.axhline(y=0, xmin=-200 , xmax=200, color='black', ls='-')
     plt.axvline(x=beta_crit, ymin=-200 , ymax=200, color='black', ls='--')
-    plt.plot(beta_list, ons_ener, '-r', label=r'$U_{Huang, Onsager}$')
+    plt.plot(beta_list, ons_ener, '-r', label=r'$U_{Onsager}$')
     #plt.plot(beta_list, wiki_ons_ener, '-b', label=r'$U_{Wiki, Onsager}$')
     #plt.annotate('Phasenübergang \n 1. Ordnung', xytext=(0.4625, -0.2), xy=(0.46, -0.5), fontsize=20)
     #plt.annotate(r'', xytext=(0.46, 0.5), xy=(0.46, -0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
     #plt.annotate('Phasenübergang \n 2. Ordnung', xytext=(0.42, 0.3), xy=(0.46, -0.5), fontsize=20)
     #plt.annotate(r'', xytext=(0.43, 0.5), xy=(0.45, 0.5), fontsize=20, arrowprops={'arrowstyle': '<|-|>'})
-    #plt.xlim([0.1,0.6])
-    #plt.ylim([-1, 0])
+    plt.xlim([0.39,0.49])
+    plt.ylim([-0.88, -0.35])
     plt.xlabel(r'$\beta$', fontsize = 24)
     plt.ylabel(r'$\beta$$U_{Onsager}$', fontsize = 24)
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.legend(loc='best', framealpha=0.5, title = 'H = 0', title_fontsize = 24, fontsize=24)
-    plotname = 'Analyse/' + 'PhasendiagrammEnergiePlusMarc.pdf'
+    plotname = 'Analyse/' + 'PhasendiagrammEnergie.pdf'
     plt.savefig(plotname, bbox_inches='tight')
     plt.close()    
 
@@ -947,7 +940,24 @@ def make_nice_plot_Ons_Korr(beta, y_data, y_err, name, legend, lat, b_field, ons
     plotname = 'Analyse/256x256/Observablen/Test_Plots/' + 'Test_' + str(name) + '_plot_' + str(lat[0]) + 'x' \
                + str(lat[1]) + '_lattice_' + 'b_field_' + str(b_field) + '.pdf'
     plt.savefig(plotname, bbox_inches='tight')
-    plt.close()     
+    plt.close()    
+    
+def corr_err_obs(beta_list, lattice_list, ext_bfield_list = 0):
+    beta_all = beta_list
+    lattice = lattice_list
+    b_field = ext_bfield_list
+    counter = 0
+    for lat in lattice:
+        for b in beta_all:
+            print(counter)
+            filename = 'Analyse/256x256/FinalTestSkips/Run3_200Konfigs/' +  str(lat[0]) + 'x' + str(lat[0]) + 'lattice_beta_' \
+                       + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
+            data = np.load(filename)
+            observables = Observables(data['configs'], beta=b)
+            observables.measure_observables()
+            observables.save_simulation(filename)
+            counter += 1
+            del observables
     
 
 
@@ -976,10 +986,10 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 # If you only want to plot for example one magnetic field value = 0
 # for some lattice sizes call lattice_plotting with external_field_list=[0]
 
-#lattice_plotting(direc='Analyse/256x256/Observablen/', beta_list=beta_all_setted, lattice_list=setted_lattice,
+#lattice_plotting(direc='Analyse/256x256/Observablen/Neu_201229/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                                  external_field_list=[0], observables=observables, OnlyBig = False)
-#lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all_for_all_lattices, lattice_list=lattice,
-#                                  external_field_list=[0], observables=observables, OnlyBig = True)
+lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all_for_all_lattices, lattice_list=lattice,
+                                  external_field_list=[0], observables=observables, OnlyBig = True)
 #lattice_plotting_double(direc1='Analyse/256x256/FinalTestSkips/100Konfigs/', direc2='Analyse/256x256/FinalTestSkips/200Konfigs/', beta_list=beta_test, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables)
 #lattice_plotting_three(direc1='Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', direc2='Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', direc3='Analyse/256x256/FinalTestVariance/Neu_210104/Run3/', beta_list=beta_test, lattice_list=setted_lattice,
@@ -991,11 +1001,8 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 #plot_phasediagram_magn()
 #plot_phasediagram_ener()
 
-'''
-write_ons_ener()
-data = np.genfromtxt('OnsEnerWerte_ML.txt', skip_header = 1).T
-print(data)
-'''
+#corr_err_obs(beta_test, setted_lattice)
+
 
 #lattice_plotting_KorrMagnVar('Analyse/256x256/Observablen/Neu_201229/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', \
 #                             'Analyse/256x256/FinalTestVariance/Neu_210104/Run3/', beta_list=beta_all_setted, lattice_list=setted_lattice, external_field_list=[0], observables=observables)
