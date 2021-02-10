@@ -230,9 +230,9 @@ def make_nice_plot_Ons_six(beta, y_data1, y_err1, y_data2, y_err2, y_data3, y_er
     plt.errorbar(x=beta, y=y_data1, yerr=y_err1, fmt='o', color='royalblue', label=legend1)
     plt.errorbar(x=beta, y=y_data2, yerr=y_err2, fmt='o', color='royalblue')
     plt.errorbar(x=beta, y=y_data3, yerr=y_err3, fmt='o', color='royalblue')
-    plt.errorbar(x=beta, y=y_data4, yerr=y_err4, fmt='o', color='purple', label=legend2)
-    plt.errorbar(x=beta, y=y_data5, yerr=y_err5, fmt='o', color='purple')
-    plt.errorbar(x=beta, y=y_data6, yerr=y_err6, fmt='o', color='purple')
+    plt.errorbar(x=beta, y=y_data4, yerr=y_err4, fmt='o', color='hotpink', label=legend2)
+    plt.errorbar(x=beta, y=y_data5, yerr=y_err5, fmt='o', color='hotpink')
+    plt.errorbar(x=beta, y=y_data6, yerr=y_err6, fmt='o', color='hotpink')
    # plt.fill_between([0.43, 0.45], -5, 300,  color='papayawhip')
     plt.axvline(x=0.4407, ymin=-200 , ymax=200, color='black', ls='--')
             # plt.xlim([beta[0], beta[-1]])
@@ -958,7 +958,72 @@ def corr_err_obs(beta_list, lattice_list, ext_bfield_list = 0):
             observables.save_simulation(filename)
             counter += 1
             del observables
-    
+            
+def ener_konfig_plot(direc, beta_list, lattice_list, observables):
+    beta = beta_list
+    lattice = lattice_list
+    numb_latpoints = lattice[0][0]*lattice[0][1]
+    filepart = direc
+    for b in beta:
+        filename = filepart + str(lattice[0][0]) + 'x' + str(lattice[0][1]) + 'lattice_beta_' \
+                                       + str(b).replace('.', '') + 'external_field_0' + '.npz'                 
+        data = np.load(filename)
+        obs = Observables(data['configs'], b)
+        obs.total_energy()
+        energy = obs.energy_per_config
+        # Comparison values of mean of data and ons_energy
+        ener_avg = np.mean(energy)/numb_latpoints
+        k = 2 * np.tanh(2 * b ) ** 2 - 1
+        l = (2 * np.sinh(2 * b )) \
+            / (np.cosh(2 * b ) ** 2 )
+        integral = elli(l)
+        ons_ener = (-(b) / (np.tanh(2 * b))) *\
+                        (1 + 2 / np.pi * k * integral)
+        plt.rcParams['figure.figsize'] = 16, 9
+        legend  = r'$\beta = $' + str(b)
+        conf_number = np.arange(1, len(data['configs'])+1, 1)
+        plt.plot(conf_number, energy/numb_latpoints, '.', color='royalblue', label=legend, zorder = 1)
+        plt.axhline(y=ener_avg, xmin=0, xmax=2000, color='red', label = 'Mittelwert', zorder = 2)
+        plt.axhline(y=ons_ener, xmin=0, xmax=2000, color='black', ls='--', label = r'$U_{Onsager}$', zorder = 2)
+        # plt.xlim([beta[0], beta[-1]])
+        plt.xlabel(r'Anzahl der Konfigurationen', fontsize=24)
+        plt.ylabel(r'$\beta$U', fontsize=24)
+        plt.xticks(fontsize=20)
+        plt.yticks(fontsize=20)
+        plt.legend(loc='best', framealpha=0.5, title = '(128x128), H = 0', title_fontsize = 24, fontsize=24)
+        plotname = 'Analyse/128x128/ObsENTBUG/UKonfigs_beta_'  + str(b) + '.pdf'
+        plt.savefig(plotname, bbox_inches='tight')
+        plt.close()
+        
+def zustandssumme_plot(direc, lattice_list, observables):
+    lattice = lattice_list
+    filepart = direc
+    filename_arr = filepart + 'energyandbetavalues.npz'                 
+    arr = np.load(filename_arr)
+    betas = arr['beta']
+    theo_energy = arr['energy']
+    sim_ener = []
+    sim_ener_std = []
+    for b in betas:
+        filename = filepart + str(lattice[0][0]) + 'x' + str(lattice[0][1]) + 'lattice_beta_' \
+                                       + str(b).replace('.', '') + 'external_field_0' + '.npz'                 
+        data = np.load(filename)
+        sim_ener.append(data['energy'])
+        sim_ener_std.append(data['energy_var'])
+        
+    plt.rcParams['figure.figsize'] = 16, 9
+    plt.plot(betas, betas*theo_energy, 'o', color='tomato', label=r'U$_{Theo}$', zorder = 2)
+    plt.errorbar(betas, sim_ener, yerr=sim_ener_std, fmt='o', color='royalblue',\
+                 label=r'Messdaten', zorder = 1)
+    plt.xlabel(r'$\beta$', fontsize=24)
+    plt.ylabel(r'$\beta$U', fontsize=24)
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.legend(loc='best', framealpha=0.5, title = '(2x2), H = 0', title_fontsize = 24, fontsize=24)
+    plotname = 'Analyse/2x2/Zustandssumme.pdf'  
+    plt.savefig(plotname, bbox_inches='tight')
+    plt.close()
+        
 
 
 '''Do not change the following three lists'''
@@ -988,8 +1053,8 @@ observables = [('energy', 'energy_var'), ('magnetisation', 'magnetisation_var'),
 
 #lattice_plotting(direc='Analyse/256x256/Observablen/Neu_201229/', beta_list=beta_all_setted, lattice_list=setted_lattice,
 #                                  external_field_list=[0], observables=observables, OnlyBig = False)
-lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all_for_all_lattices, lattice_list=lattice,
-                                  external_field_list=[0], observables=observables, OnlyBig = True)
+#lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all_for_all_lattices, lattice_list=lattice,
+#                                  external_field_list=[0], observables=observables, OnlyBig = True)
 #lattice_plotting_double(direc1='Analyse/256x256/FinalTestSkips/100Konfigs/', direc2='Analyse/256x256/FinalTestSkips/200Konfigs/', beta_list=beta_test, lattice_list=setted_lattice,
 #                 external_field_list=[0], observables=observables)
 #lattice_plotting_three(direc1='Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', direc2='Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', direc3='Analyse/256x256/FinalTestVariance/Neu_210104/Run3/', beta_list=beta_test, lattice_list=setted_lattice,
@@ -1002,6 +1067,9 @@ lattice_plotting(direc='Analyse/Volumen/Deutsch/Neu_201208/', beta_list=beta_all
 #plot_phasediagram_ener()
 
 #corr_err_obs(beta_test, setted_lattice)
+#ener_konfig_plot('Analyse/128x128/ObsENTBUG/', [0.39, 0.49], [(128, 128)], observables=observables)
+
+zustandssumme_plot('Analyse/2x2/', [(2, 2)], observables=observables)
 
 
 #lattice_plotting_KorrMagnVar('Analyse/256x256/Observablen/Neu_201229/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run1/', 'Analyse/256x256/FinalTestVariance/Neu_210104/Run2/', \
