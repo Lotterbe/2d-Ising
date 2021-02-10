@@ -27,7 +27,7 @@ def hysterese_measuring(external_field_list, beta=0.49):
     #metro.skip = 10 * metro.total_number_of_points
     # Leas Visualisierung: Bedingung
     #config_array = np.array(configs)
-    config_array = [configs[-1]] 
+    config_array = [configs[-1]]
     for b_field in external_field_list:
         #print('Start measuring...!')
         print(counter)
@@ -44,8 +44,8 @@ def hysterese_measuring(external_field_list, beta=0.49):
         magneti.append(observables.nabs_m_average)
         #filename = 'Analyse/128x128/Hysterese/' + '128x128' + 'lattice_beta_' \
         #                   + str(beta).replace('.', '') + 'external_field_' + str(b_field)
-        #filename = 'Analyse/128x128/Hysterese/Visual/' + '128x128' + 'lattice_beta_'  \
-        #                + str(beta).replace('.', '') + 'external_field_' + str(b_field)
+        filename = 'Analyse/128x128/Hysterese/Visual/' + '128x128' + 'lattice_beta_'  \
+                        + str(beta).replace('.', '') + 'external_field_' + str(b_field) + 'new'
         #Insert your file path in the first ''
         filename = 'Analyse/512x512/Hysterese/' + '210115_' + '512x512' + 'lattice_beta_' \
                            + str(beta).replace('.', '') + 'external_field_' + str(b_field)
@@ -522,7 +522,7 @@ def hysterese_plot_newcurve(direc, beta=0.49, external_b_field_list=[0]):
     external_b_field = external_b_field_list
     y_data = data['y']
     plt.rcParams['figure.figsize'] = 16, 9
-    legend = r'Datenpunkte' 
+    legend = r'Datenpunkte'
     plt.plot(external_b_field[0:4], y_data[0:4], '-D', color='black', zorder = 2, label = 'Neukurve')
     plt.plot(external_b_field[56:65], y_data[56:65], '-D', color='hotpink', zorder = 2, label = 'Abfallend')
     plt.plot(external_b_field[116:125], y_data[116:125], '-D', color='purple', zorder = 2, label = 'Aufsteigend')

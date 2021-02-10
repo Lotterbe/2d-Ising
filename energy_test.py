@@ -31,19 +31,24 @@ for conf in config_list:
 def debug_energy(beta):
     return -16 * np.sinh(8*beta)/(12+2*np.cosh(8*beta))/4
 
-beta_arr = [0.39, 0.395, 0.4, 0.405, 0.41, 0.4125, 0.415, 0.4175, 0.42, 0.4225, 0.425, 0.4275, 0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.43894, 0.43896, 0.43898, 0.44, 0.4402, 0.4404, 0.4406, 0.4408, 0.441, 0.4412, 0.44125, 0.4414, 0.4416, 0.4418, 0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45, 0.4525, 0.455, 0.4575, 0.46, 0.4625, 0.465, 0.4675, 0.47, 0.475, 0.48, 0.485, 0.49]
+#beta_arr = [0.39, 0.395, 0.4, 0.405, 0.41, 0.4125, 0.415, 0.4175, 0.42, 0.4225, 0.425, 0.4275, 0.43, 0.43125, 0.4325, 0.43375, 0.435, 0.43625, 0.4375, 0.43875, 0.43894, 0.43896, 0.43898, 0.44, 0.4402, 0.4404, 0.4406, 0.4408, 0.441, 0.4412, 0.44125, 0.4414, 0.4416, 0.4418, 0.4425, 0.44375, 0.445, 0.44625, 0.4475, 0.44875, 0.45, 0.4525, 0.455, 0.4575, 0.46, 0.4625, 0.465, 0.4675, 0.47, 0.475, 0.48, 0.485, 0.49]
 
 
 #beta_arr = np.arange(0.1, 0.6, 0.025)
+beta_arr = np.arange(0, 1, 0.05)
 
 energy_arr = []
 for bet in beta_arr:
     energy_arr.append(debug_energy(beta=bet))
 
+
+np.savez_compressed('Analyse/Testing/2x2/energyandbetavalues', energy=energy_arr, beta=beta_arr)
+
+
 #lat = (64,64)
 #lat = (128,128)
-#lat = (2, 2)
-lat = (256,256)
+lat = (2, 2)
+#lat = (256,256)
 #lat = (64,64)
 b_field=0
 
@@ -65,10 +70,12 @@ y_err_heat_boot = []
 mag = []
 chi = []
 y_err_chi_boot = []
+obs = []
+obs_std = []
 #for b in beta_arr_short:
 for b in beta_arr:
     #print(r'Measuring $\beta$ = ' + str(b))
-    #metro = Metropolis(*lat, beta=b, external_field=b_field, flip=False)
+    #metro = Metropolis(*lat, beta=b, external_field=b_field)#, flip=False)
     #metro.itersteps = 2010000 * metro.total_number_of_points # 20010000
     #metro.first_skip = 10000 * metro.total_number_of_points #10000
     #metro.skip = 1 * metro.total_number_of_points #2000
@@ -76,13 +83,20 @@ for b in beta_arr:
     #metro.first_skip = 500 * metro.total_number_of_points
     #metro.skip = 500 * metro.total_number_of_points
     #metro.reset()
+
+
     #configs = metro.start_simulation()
-    filename = 'Analyse/256x256/Observablen/Neu_201229/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
+    filename = 'Analyse/Testing/2x2/' +  str(lat[0]) + 'x' + str(lat[1]) + 'lattice_beta_' \
                + str(b).replace('.', '') + 'external_field_' + str(b_field) + '.npz'
     data = np.load(filename)
-    observables = Observables(data['configs'], beta=b)
-    observables.measure_observables()
-    observables.save_simulation(filename)
+    obs.append(data['energy'])
+    obs_std.append(data['energy_var'])
+    #observables = Observables(data['configs'], beta=b)
+    #observables = Observables(configs, beta=b)
+    #observables.measure_observables()
+    #observables.save_simulation(filename)
+
+
     #observables = Observables(configs, beta=b)
     #observables.measure_observables()
     #observables.total_energy()
@@ -116,7 +130,7 @@ for b in beta_arr:
     #np.savez_compressed(filename, observables.energy_per_config/(lat[0]*lat[1]))
     #y_err.append(observables.energy_var/(lat[0]*lat[1]))
     #del metro, observables
-    del observables
+    #del observables
 
 #print(y_err)
 #print(y_err_compare)
@@ -138,14 +152,15 @@ for b in beta_arr:
 #down = np.where(config_energy_arr==-0.2, 1, 0)
 #print('Boltzmann', np.sum(up)/np.sum(down))
 
-#plt.plot(beta_arr, energy_arr, marker='+')
+plt.plot(beta_arr, energy_arr*beta_arr, marker='+')
 #plt.plot(beta_arr, meas_energy_arr, marker='o')
-#plt.errorbar(x=beta_arr, y=meas_energy_arr, yerr=y_err, fmt='o')
+plt.errorbar(x=beta_arr, y=obs, yerr=obs_std, fmt='o')
 # for i in range(0,len(config_energy_arr)):
 #    plt.plot(config_energy_arr[i], marker='+', ls='')
 #    filename= 'Analyse/DEBUG/' + 'lattice' + str(lat[0]) + 'x' + str(lat[1]) + str(beta_arr_short[i]) + 'alt.png'
 #    plt.savefig(filename)
 #    plt.close()
+plt.show()
 
 
 
@@ -179,8 +194,8 @@ for b in beta_arr:
 #plt.show()
 
 
-plt.errorbar(beta_arr, chi, y_err_chi_boot, fmt='x')
+#plt.errorbar(beta_arr, chi, y_err_chi_boot, fmt='x')
 #filename= 'Analyse/DEBUG/Jack/' + 'lattice' + str(lat[0]) + 'x' + str(lat[1]) + 'energy_bootstrap100.pdf'
-filename= 'Analyse/DEBUG/Jack/' + 'lattice' + str(lat[0]) + 'x' + str(lat[1]) + 'chi_jack.pdf'
-plt.savefig(filename)
-plt.close()
+#filename= 'Analyse/DEBUG/Jack/' + 'lattice' + str(lat[0]) + 'x' + str(lat[1]) + 'chi_jack.pdf'
+#plt.savefig(filename)
+#plt.close()
