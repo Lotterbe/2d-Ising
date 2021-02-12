@@ -1,0 +1,144 @@
+%\documentclass[10pt,a4paper]{article}
+\documentclass[tikz]{standalone}
+%\usepackage[utf8]{inputenc}
+
+% TikZ und Bibliotheken
+%\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.geometric}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{intersections}
+
+
+
+\begin{document}
+
+\tikzset{
+  grec/.style={
+  rectangle,
+  fill=green!10,
+  draw=green!50!black ,
+  rounded corners
+  },
+  brec/.style={
+  rectangle,
+  fill=blue!20,
+  draw=blue,
+  rounded corners
+  },
+  orec/.style={
+  rectangle,
+  fill=orange!20,
+  draw=orange ,
+  rounded corners 
+  },
+  mrec/.style={
+  rectangle,
+  fill=magenta!20,
+  draw=magenta,
+  rounded corners
+  },
+   crec/.style={
+  rectangle,
+  fill=cyan!10,
+  draw=cyan,
+  rounded corners
+  },
+  reclayer/.style args={#1}{
+   text = blue,
+   dotted,
+  rectangle,
+  fill=black!5,
+  draw=black ,
+  label = {[black] #1}
+  },
+  io/.style={
+trapezium,
+trapezium left angle=70,
+trapezium right angle=110,
+fill=magenta!20,
+ draw=magenta},
+  op/.style={
+rectangle,
+fill=orange!20,
+ draw=orange},
+ co/.style={
+diamond,
+aspect=2,
+inner sep=2pt,
+fill=red!20,
+ draw=red}
+}
+
+%\tikzset{
+%io/.style={
+%trapezium,
+%trapezium left angle=70,
+%trapezium right angle=110,
+%fill=magenta!20,
+% draw=magenta},
+% op/.style={
+%rectangle,
+%fill=orange!20,
+% draw=orange},
+% co/.style={
+%diamond,
+%aspect=2,
+%inner sep=2pt,
+%fill=red!20,
+% draw=red},
+% node distance = 5mm}
+
+%\subsection*{Newton Maschine}
+
+
+
+\begin{tikzpicture}[thick, scale=3]
+
+\node[reclayer = class, minimum width=6cm,minimum height=5.5cm]  (recone) {};
+
+\node[crec, below=of recone.north, yshift=+0.9cm, xshift=-0.4cm, align=center, font=\huge] (force) {Observables};
+
+%\node[grec, below=of force, xshift=+0.5cm, yshift=0.9cm] (methodone) {measure\_observables()};
+
+
+
+\node[grec, below=of force,  xshift=+0.1cm, yshift=0.8cm, align=left, font=\small] (methodone) {$\texttt{measure\_observables():}$\\
+
+\begin{tikzpicture}
+
+\node[grec, yshift=0.7cm, align=left, font=\tiny] (update) {$\texttt{total\_energy();}$   $\texttt{magnetisation();}$ \\ $\texttt{OnsagerEnergy();}$ $\texttt{Yang\_Magn();}$\\ $\texttt{bootstrap();}$} ;
+\end{tikzpicture}
+
+};
+
+\path[->, draw] (force.west) -- ++ (-0.05, 0) |- (methodone);
+
+%\node[grec, below=of methodtwo, yshift=0.7cm, align=right, font=\tiny] (update) { Choose random $s_{ij}$\\$\texttt{if } (e^{-\beta dE} \geq r):$ \\ $s_{ij} =(-1)\cdot s_{ij}$};
+
+%\path[->, draw] ($(methodone.south east) + (0.,0.08)$)  -- ++ (0.12,0) |- node[right, yshift=-0.4cm, align=left, font=\tiny] {1 MC\\ = NxN} ($(methodone.east)+(0.0, 0.08)$);
+% (force.west) -- ++(-0.1, 0) |- edge (methodone.west);
+
+\node[grec, below=of methodone,  xshift=+0.35cm, yshift=0.7cm, align=left, font=\small] (methodtwo) {$\texttt{save\_simulation(filename):}$\\
+
+
+\begin{tikzpicture}
+
+\node[grec, yshift=0.7cm, align=left, font=\tiny] (update) {$\texttt{np.savez\_compressed();}$} ;
+\end{tikzpicture}
+
+};
+
+\path[->, draw] (force.west) -- ++ (-0.05, 0) |- (methodtwo);
+
+\node[mrec, below=of methodtwo, xshift=+0cm, yshift=0.7cm, align=left, font=\footnotesize] (result) {create $\texttt{.npz file}$ with \\ 
+- configs,\\ -  observables, \\ - etc.};
+
+%\path[->, draw] (methodone) edge (methodtwo);
+\path[->, draw] (methodtwo) edge (result);
+  %{$\texttt{observables,}$ \\ $\texttt{configs}$}
+  %{$\texttt{Neues Wertepaar}$ \\ $(t_{k+1}, s_{k+1})$}; 
+\end{tikzpicture}
+
+
+\end{document}
